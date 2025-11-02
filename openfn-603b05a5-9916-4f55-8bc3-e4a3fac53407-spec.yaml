@@ -201,16 +201,24 @@ workflows:
           downloadCredential($.credentialId, {
             templateId: 'cmhbkgjqo000ems0jvbeayn1h',
           });
-      Send-to-citizen:
-        name: Send to citizen
+      Deliver-to-citizen:
+        name: Deliver to citizen
         adaptor: '@openfn/language-mailgun@latest'
         credential: taylor@openfn.org-TD-Mailgun
         body: |
           send({
             from: 'admin@openfn.org',
-            to: ['taylor@openfn.org', 'downs.taylor@gmail.com'],
-            subject: 'Test DPGA VCs',
-            text: 'Check out your verifiable credential: \n\n'
+            to: [
+              'taylor@openfn.org',
+              'cheryl@open.gov.sg',
+              'michel@open.gov.sg',
+              'kartheek@sanketika.in',
+              'jack@openfn.org',
+              'pius@openfn.org',
+              'mohit@coss.org.in',
+            ],
+            subject: 'You have a new ✨ verifiable credential! 👍',
+            text: '🥳 Congratulations! The deatils are below and å PDF version is attached.\n\n'
               + `Subject: ${JSON.stringify($.proof.credentialSubject, null, 2)}\n\n`
               + `Proof: ${JSON.stringify($.proof.proof, null, 2)}\n\n`
               + `Best,\n`
@@ -219,6 +227,43 @@ workflows:
               filename: 'credential.pdf',
               data: $.data
             },
+          });
+      Notify-if-invalid:
+        name: Notify if invalid
+        adaptor: '@openfn/language-mailgun@0.5.21'
+        credential: taylor@openfn.org-TD-Mailgun
+        body: |
+          send({
+            from: 'admin@openfn.org',
+            to: ['taylor@openfn.org'],
+            subject: 'Could not issue credential',
+            text: 'We could not issue a verifiable credential for: \n\n'
+              + `Subject: ${JSON.stringify($.data.normalized, null, 2)}\n\n`
+              + `Best,\n`
+              + `Your Government`
+          });
+      Alert-institution-credential-issuance:
+        name: Alert institution credential issuance
+        adaptor: '@openfn/language-mailgun@0.5.21'
+        credential: taylor@openfn.org-TD-Mailgun
+        body: |
+          send({
+            from: 'admin@openfn.org',
+            to: [
+              'taylor@openfn.org',
+              'cheryl@open.gov.sg',
+              'michel@open.gov.sg',
+              'kartheek@sanketika.in',
+              'jack@openfn.org',
+              'pius@openfn.org',
+              'mohit@coss.org.in',
+            ],
+            subject: 'New credential issued',
+            text: 'A new credential has just been issued: \n\n'
+              + `Subject: ${JSON.stringify($.proof.credentialSubject, null, 2)}\n\n`
+              + `Proof: ${JSON.stringify($.proof.proof, null, 2)}\n\n`
+              + `Best,\n`
+              + `Your Government`
           });
     triggers:
       webhook:
@@ -245,8 +290,18 @@ workflows:
         target_job: Fetch-certificate-as-PDF
         condition_type: on_job_success
         enabled: true
-      Fetch-certificate-as-PDF->Send-to-citizen:
+      Fetch-certificate-as-PDF->Deliver-to-citizen:
         source_job: Fetch-certificate-as-PDF
-        target_job: Send-to-citizen
+        target_job: Deliver-to-citizen
         condition_type: on_job_success
         enabled: true
+      Issue-a-Verifiable-Credential->Notify-if-invalid:
+        source_job: Issue-a-Verifiable-Credential
+        target_job: Notify-if-invalid
+        condition_type: on_job_failure
+        enabled: true
+      Fetch-certificate-as-PDF->Alert-institution-credential-issuance:
+        source_job: Fetch-certificate-as-PDF
+        target_job: Alert-institution-credential-issuance
+        condition_type: on_job_success
+        enabled: false

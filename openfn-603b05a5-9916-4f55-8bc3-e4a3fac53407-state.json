@@ -155,8 +155,8 @@
     "FormSG-and-Sunbird-RC": {
       "id": "a586690c-9bce-480f-9dc3-f560d531a9fc",
       "name": "FormSG and Sunbird RC",
-      "inserted_at": "2025-11-02T13:04:26.430411Z",
-      "lock_version": 60,
+      "inserted_at": "2025-11-02T13:16:05.939392Z",
+      "lock_version": 72,
       "triggers": {
         "webhook": {
           "enabled": true,
@@ -193,11 +193,25 @@
           "adaptor": "@openfn/language-sunbird-rc@1.0.0",
           "project_credential_id": "5610a2a6-51ca-4698-850d-0225ba1658f0"
         },
-        "Send-to-citizen": {
+        "Deliver-to-citizen": {
           "id": "7c5e6bfc-49ed-4c09-8980-f984e4d36d32",
-          "name": "Send to citizen",
-          "body": "send({\n  from: 'admin@openfn.org',\n  to: ['taylor@openfn.org', 'downs.taylor@gmail.com'],\n  subject: 'Test DPGA VCs',\n  text: 'Check out your verifiable credential: \\n\\n'\n    + `Subject: ${JSON.stringify($.proof.credentialSubject, null, 2)}\\n\\n`\n    + `Proof: ${JSON.stringify($.proof.proof, null, 2)}\\n\\n`\n    + `Best,\\n`\n    + `Your Government`,\n  attachment: {\n    filename: 'credential.pdf',\n    data: $.data\n  },\n});",
+          "name": "Deliver to citizen",
+          "body": "send({\n  from: 'admin@openfn.org',\n  to: [\n    'taylor@openfn.org',\n    'cheryl@open.gov.sg',\n    'michel@open.gov.sg',\n    'kartheek@sanketika.in',\n    'jack@openfn.org',\n    'pius@openfn.org',\n    'mohit@coss.org.in',\n  ],\n  subject: 'You have a new ✨ verifiable credential! 👍',\n  text: '🥳 Congratulations! The deatils are below and å PDF version is attached.\\n\\n'\n    + `Subject: ${JSON.stringify($.proof.credentialSubject, null, 2)}\\n\\n`\n    + `Proof: ${JSON.stringify($.proof.proof, null, 2)}\\n\\n`\n    + `Best,\\n`\n    + `Your Government`,\n  attachment: {\n    filename: 'credential.pdf',\n    data: $.data\n  },\n});",
           "adaptor": "@openfn/language-mailgun@latest",
+          "project_credential_id": "5030d8ba-e762-4031-a39b-e5c84396bd08"
+        },
+        "Notify-if-invalid": {
+          "id": "3dba64e0-305f-4a13-899f-5c2abb87baa6",
+          "name": "Notify if invalid",
+          "body": "send({\n  from: 'admin@openfn.org',\n  to: ['taylor@openfn.org'],\n  subject: 'Could not issue credential',\n  text: 'We could not issue a verifiable credential for: \\n\\n'\n    + `Subject: ${JSON.stringify($.data.normalized, null, 2)}\\n\\n`\n    + `Best,\\n`\n    + `Your Government`\n});",
+          "adaptor": "@openfn/language-mailgun@0.5.21",
+          "project_credential_id": "5030d8ba-e762-4031-a39b-e5c84396bd08"
+        },
+        "Alert-institution-credential-issuance": {
+          "id": "a7739466-2f65-4183-85e5-29557a30787a",
+          "name": "Alert institution credential issuance",
+          "body": "send({\n  from: 'admin@openfn.org',\n  to: [\n    'taylor@openfn.org',\n    'cheryl@open.gov.sg',\n    'michel@open.gov.sg',\n    'kartheek@sanketika.in',\n    'jack@openfn.org',\n    'pius@openfn.org',\n    'mohit@coss.org.in',\n  ],\n  subject: 'New credential issued',\n  text: 'A new credential has just been issued: \\n\\n'\n    + `Subject: ${JSON.stringify($.proof.credentialSubject, null, 2)}\\n\\n`\n    + `Proof: ${JSON.stringify($.proof.proof, null, 2)}\\n\\n`\n    + `Best,\\n`\n    + `Your Government`\n});",
+          "adaptor": "@openfn/language-mailgun@0.5.21",
           "project_credential_id": "5030d8ba-e762-4031-a39b-e5c84396bd08"
         }
       },
@@ -230,10 +244,24 @@
           "source_job_id": "651b69ee-f927-42a8-8cce-712a8f1c96de",
           "condition_type": "on_job_success"
         },
-        "Fetch-certificate-as-PDF->Send-to-citizen": {
+        "Fetch-certificate-as-PDF->Deliver-to-citizen": {
           "enabled": true,
           "id": "321cff88-f684-4a25-842e-b45669b226d3",
           "target_job_id": "7c5e6bfc-49ed-4c09-8980-f984e4d36d32",
+          "source_job_id": "5938ec99-a16a-493e-8d83-4aafd10f1dea",
+          "condition_type": "on_job_success"
+        },
+        "Issue-a-Verifiable-Credential->Notify-if-invalid": {
+          "enabled": true,
+          "id": "aaa74f73-9444-4ecd-87bd-86ea48d7f27a",
+          "target_job_id": "3dba64e0-305f-4a13-899f-5c2abb87baa6",
+          "source_job_id": "651b69ee-f927-42a8-8cce-712a8f1c96de",
+          "condition_type": "on_job_failure"
+        },
+        "Fetch-certificate-as-PDF->Alert-institution-credential-issuance": {
+          "enabled": false,
+          "id": "167fdeab-b284-4bac-8eb1-4f6891ea2e95",
+          "target_job_id": "a7739466-2f65-4183-85e5-29557a30787a",
           "source_job_id": "5938ec99-a16a-493e-8d83-4aafd10f1dea",
           "condition_type": "on_job_success"
         }
