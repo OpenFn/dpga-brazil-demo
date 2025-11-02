@@ -193,13 +193,13 @@ workflows:
           fn(state => ({ ...state, credentialId: state.data.credential.id }));
 
           getCredential($.credentialId, {
-            templateId: 'cmhbkgjqo000ems0jvbeayn1h',
+            templateId: 'cmhct2djx001ems0j0pxlg1qc',
           });
 
           fn(state => ({ ...state, proof: state.data }));
 
           downloadCredential($.credentialId, {
-            templateId: 'cmhbkgjqo000ems0jvbeayn1h',
+            templateId: 'cmhct2djx001ems0j0pxlg1qc',
           });
       Deliver-to-citizen:
         name: Deliver to citizen

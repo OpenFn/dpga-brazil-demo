@@ -155,8 +155,8 @@
     "FormSG-and-Sunbird-RC": {
       "id": "a586690c-9bce-480f-9dc3-f560d531a9fc",
       "name": "FormSG and Sunbird RC",
-      "inserted_at": "2025-11-02T13:59:02.773388Z",
-      "lock_version": 95,
+      "inserted_at": "2025-11-02T17:03:11.647200Z",
+      "lock_version": 99,
       "triggers": {
         "webhook": {
           "enabled": true,
@@ -189,7 +189,7 @@
         "Fetch-certificate-as-PDF": {
           "id": "5938ec99-a16a-493e-8d83-4aafd10f1dea",
           "name": "Fetch certificate as PDF",
-          "body": "fn(state => ({ ...state, credentialId: state.data.credential.id }));\n\ngetCredential($.credentialId, {\n  templateId: 'cmhbkgjqo000ems0jvbeayn1h',\n});\n\nfn(state => ({ ...state, proof: state.data }));\n\ndownloadCredential($.credentialId, {\n  templateId: 'cmhbkgjqo000ems0jvbeayn1h',\n});",
+          "body": "fn(state => ({ ...state, credentialId: state.data.credential.id }));\n\ngetCredential($.credentialId, {\n  templateId: 'cmhct2djx001ems0j0pxlg1qc',\n});\n\nfn(state => ({ ...state, proof: state.data }));\n\ndownloadCredential($.credentialId, {\n  templateId: 'cmhct2djx001ems0j0pxlg1qc',\n});",
           "adaptor": "@openfn/language-sunbird-rc@1.0.1",
           "project_credential_id": "5610a2a6-51ca-4698-850d-0225ba1658f0"
         },
