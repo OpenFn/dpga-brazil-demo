@@ -8,10 +8,10 @@
   "inserted_at": "2025-09-30T06:59:34Z",
   "updated_at": "2025-10-02T14:49:21Z",
   "parent_id": null,
-  "scheduled_deletion": null,
   "history_retention_period": 365,
   "dataclip_retention_period": null,
   "retention_policy": "retain_all",
+  "scheduled_deletion": null,
   "project_credentials": {
     "international@open.gov.sg-OpenFn-Test": {
       "id": "924fcb67-909a-4490-923d-f835ac4ff5cf",
@@ -155,8 +155,8 @@
     "FormSG-and-Sunbird-RC": {
       "id": "a586690c-9bce-480f-9dc3-f560d531a9fc",
       "name": "FormSG and Sunbird RC",
-      "inserted_at": "2025-11-02T13:16:05.939392Z",
-      "lock_version": 72,
+      "inserted_at": "2025-11-02T13:59:02.773388Z",
+      "lock_version": 95,
       "triggers": {
         "webhook": {
           "enabled": true,
@@ -175,43 +175,43 @@
         "Transform-Form-Data-and-Fetch-Course-Score": {
           "id": "5373fcb3-9c55-4a6d-86eb-42496a84acc2",
           "name": "Transform Form Data and Fetch Course Score",
-          "body": "function getAnswer(responses, label) {\n  const f = responses.find(r => r.question === label);\n  return f ? f.answer : null;\n}\n\nfunction generateDemoGrade() {\n  const base = 8.5 + Math.random() * 1.4; // 8.5 – 9.9\n  const rounded = Math.round(base * 100) / 100;\n  return `${rounded} / 10 (Distinction)`;\n}\n\nfn(state => {\n  const responses = state.data.responses || state.data.data?.responses || [];\n\n  const name = getAnswer(responses, 'Name') || 'Learner';\n  const email = getAnswer(responses, 'Email') || 'unknown@example.com';\n  const phone = getAnswer(responses, 'Mobile') || '+65-0000-0000';\n  const programme = getAnswer(responses, 'Course') || 'Data Analytics';\n\n  \n// In real life use cases, this is fetched from an external system\n// But for simplicity of demo: just generate it here as mocked data\n  const grade = generateDemoGrade();\n\n  state.data.normalized = {\n    name,\n    email,\n    phone,\n    programme,\n    grade\n  };\n\n  return state;\n});\n",
+          "body": "function getAnswer(responses, label) {\n  const f = responses.find(r => r.question === label);\n  return f ? f.answer : null;\n}\n\nfunction generateDemoGrade() {\n  const base = 8.5 + Math.random() * 1.4; // 8.5 – 9.9\n  const rounded = Math.round(base * 100) / 100;\n  return `${rounded} / 10 (Distinction)`;\n}\n\nfn(state => {\n  const responses = state.data.responses || state.data.data?.responses || [];\n\n  const name = getAnswer(responses, 'Name') || 'Learner';\n  const email = getAnswer(responses, 'Email') || 'unknown@example.com';\n  const phone = getAnswer(responses, 'Mobile') || '+65-0000-0000';\n  const programme = getAnswer(responses, 'Course') || 'Data Analytics';\n\n  \n// In real life use cases, this is fetched from an external system\n// But for simplicity of demo: just generate it here as mocked data\n  const grade = generateDemoGrade();\n\n  const normalized = {\n    name,\n    email,\n    phone,\n    programme,\n    grade\n  };\n\n  return { ...state, normalized };\n});\n",
           "adaptor": "@openfn/language-common@latest",
           "project_credential_id": null
         },
         "Issue-a-Verifiable-Credential": {
           "id": "651b69ee-f927-42a8-8cce-712a8f1c96de",
           "name": "Issue a Verifiable Credential",
-          "body": "issueCredential({\n  credential: {\n    \"@context\": [\n      \"https://www.w3.org/2018/credentials/v1\",\n      \"https://littlemight.github.io/sunbird-demo-vc-context/demo-context.json\"\n    ],\n    \"type\": [\n      \"VerifiableCredential\",\n      \"ProofOfAcademicEvaluationCredential\"\n    ],\n    \"issuer\": \"did:web:example.com:identifier:9536bc3b-3f4b-4cec-8c48-f67c9c4d63fc\",\n    \"issuanceDate\": new Date().toISOString(),\n    \"expirationDate\": new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString(),\n    \"credentialSubject\": {\n      \"id\": \"did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450\",\n      \"type\": \"ProofOfAcademicEvaluationCredential\",\n      \"name\": $.data.normalized.name,\n      \"grade\": $.data.normalized.grade,\n      \"programme\": $.data.normalized.programme,\n      \"certifyingInstitute\": \"YourSkillsFuture Council\",\n      \"evaluatingInstitute\": \"Institute of Digital Learning, India\",\n    }\n  },\n  \"credentialSchemaId\": \"did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450\",\n  \"credentialSchemaVersion\": \"1.0.0\",\n  \"tags\": [\"demo\", \"education\", \"cross-border\"]\n})",
-          "adaptor": "@openfn/language-sunbird-rc@1.0.0",
+          "body": "issueCredential({\n  credential: {\n    \"@context\": [\n      \"https://www.w3.org/2018/credentials/v1\",\n      \"https://littlemight.github.io/sunbird-demo-vc-context/demo-context.json\"\n    ],\n    \"type\": [\n      \"VerifiableCredential\",\n      \"ProofOfAcademicEvaluationCredential\"\n    ],\n    \"issuer\": \"did:web:example.com:identifier:9536bc3b-3f4b-4cec-8c48-f67c9c4d63fc\",\n    \"issuanceDate\": new Date().toISOString(),\n    \"expirationDate\": new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString(),\n    \"credentialSubject\": {\n      \"id\": \"did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450\",\n      \"type\": \"ProofOfAcademicEvaluationCredential\",\n      \"name\": $.normalized.name,\n      \"grade\": $.normalized.grade,\n      \"programme\": $.normalized.programme,\n      \"certifyingInstitute\": \"YourSkillsFuture Council\",\n      \"evaluatingInstitute\": \"Institute of Digital Learning, India\",\n    }\n  },\n  \"credentialSchemaId\": \"did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450\",\n  \"credentialSchemaVersion\": \"1.0.0\",\n  \"tags\": [\"demo\", \"education\", \"cross-border\"]\n})",
+          "adaptor": "@openfn/language-sunbird-rc@1.0.1",
           "project_credential_id": "5610a2a6-51ca-4698-850d-0225ba1658f0"
         },
         "Fetch-certificate-as-PDF": {
           "id": "5938ec99-a16a-493e-8d83-4aafd10f1dea",
           "name": "Fetch certificate as PDF",
-          "body": "fn(state => ({ ...state, credentialId: state.data.credential.id }))\n\ngetCredential($.credentialId, {\n  templateId: 'cmhbkgjqo000ems0jvbeayn1h',\n});\n\nfn(state => ({ ...state, proof: state.data }));\n\ndownloadCredential($.credentialId, {\n  templateId: 'cmhbkgjqo000ems0jvbeayn1h',\n});",
-          "adaptor": "@openfn/language-sunbird-rc@1.0.0",
+          "body": "fn(state => ({ ...state, credentialId: state.data.credential.id }));\n\ngetCredential($.credentialId, {\n  templateId: 'cmhbkgjqo000ems0jvbeayn1h',\n});\n\nfn(state => ({ ...state, proof: state.data }));\n\ndownloadCredential($.credentialId, {\n  templateId: 'cmhbkgjqo000ems0jvbeayn1h',\n});",
+          "adaptor": "@openfn/language-sunbird-rc@1.0.1",
           "project_credential_id": "5610a2a6-51ca-4698-850d-0225ba1658f0"
         },
         "Deliver-to-citizen": {
           "id": "7c5e6bfc-49ed-4c09-8980-f984e4d36d32",
           "name": "Deliver to citizen",
-          "body": "send({\n  from: 'admin@openfn.org',\n  to: [\n    'taylor@openfn.org',\n    'cheryl@open.gov.sg',\n    'michel@open.gov.sg',\n    'kartheek@sanketika.in',\n    'jack@openfn.org',\n    'pius@openfn.org',\n    'mohit@coss.org.in',\n  ],\n  subject: 'You have a new ✨ verifiable credential! 👍',\n  text: '🥳 Congratulations! The deatils are below and å PDF version is attached.\\n\\n'\n    + `Subject: ${JSON.stringify($.proof.credentialSubject, null, 2)}\\n\\n`\n    + `Proof: ${JSON.stringify($.proof.proof, null, 2)}\\n\\n`\n    + `Best,\\n`\n    + `Your Government`,\n  attachment: {\n    filename: 'credential.pdf',\n    data: $.data\n  },\n});",
-          "adaptor": "@openfn/language-mailgun@latest",
+          "body": "send({\n  from: 'admin@openfn.org',\n  to: $.normalized.email,\n  cc: [\n    'taylor@openfn.org',\n    'cheryl@open.gov.sg',\n    'michel@open.gov.sg',\n    'kartheek@sanketika.in',\n    'jack@openfn.org',\n    'pius@openfn.org',\n    'mohit@coss.org.in',\n  ],\n  subject: '✨ You have a new verifiable credential! ✅',\n  html: `<!DOCTYPE html>\n    <html>\n    <head>\n        <meta charset=\"UTF-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    </head>\n    <body style=\"font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;\">\n        <p>Dear ${$.normalized.name},</p>\n        \n        <p>🥳 Congratulations 🎉 on your new verifiable credential! The deatils are below and a PDF version is attached to this email.</p>\n        \n        <p><strong>Subject:</strong></p>\n        <ul style=\"background-color: #f4f4f4; padding: 20px; border-radius: 5px;\">\n            ${Object.entries(state.proof.credentialSubject).map(([key, value]) => \n                `<li><strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}</li>`\n            ).join('')}\n        </ul>\n        \n        <p><strong>Proof:</strong></p>\n        <ul style=\"background-color: #f4f4f4; padding: 20px; border-radius: 5px;\">\n            ${Object.entries(state.proof.proof).map(([key, value]) => \n                `<li><strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}</li>`\n            ).join('')}\n        </ul>\n        \n        <p>Best,<br>\n        Your Government</p>\n        \n        <p style=\"color: #666;\"><em>Powered 🇸🇬 FormSG and 🇮🇳 SunbirdRC. Automated by 🌍 OpenFn.</em></p>\n    </body>\n    </html>`,\n  attachment: {\n    filename: 'credential.pdf',\n    data: $.data\n  },\n});",
+          "adaptor": "@openfn/language-mailgun@0.6.0",
           "project_credential_id": "5030d8ba-e762-4031-a39b-e5c84396bd08"
         },
         "Notify-if-invalid": {
           "id": "3dba64e0-305f-4a13-899f-5c2abb87baa6",
           "name": "Notify if invalid",
           "body": "send({\n  from: 'admin@openfn.org',\n  to: ['taylor@openfn.org'],\n  subject: 'Could not issue credential',\n  text: 'We could not issue a verifiable credential for: \\n\\n'\n    + `Subject: ${JSON.stringify($.data.normalized, null, 2)}\\n\\n`\n    + `Best,\\n`\n    + `Your Government`\n});",
-          "adaptor": "@openfn/language-mailgun@0.5.21",
+          "adaptor": "@openfn/language-mailgun@0.6.0",
           "project_credential_id": "5030d8ba-e762-4031-a39b-e5c84396bd08"
         },
         "Alert-institution-credential-issuance": {
           "id": "a7739466-2f65-4183-85e5-29557a30787a",
           "name": "Alert institution credential issuance",
           "body": "send({\n  from: 'admin@openfn.org',\n  to: [\n    'taylor@openfn.org',\n    'cheryl@open.gov.sg',\n    'michel@open.gov.sg',\n    'kartheek@sanketika.in',\n    'jack@openfn.org',\n    'pius@openfn.org',\n    'mohit@coss.org.in',\n  ],\n  subject: 'New credential issued',\n  text: 'A new credential has just been issued: \\n\\n'\n    + `Subject: ${JSON.stringify($.proof.credentialSubject, null, 2)}\\n\\n`\n    + `Proof: ${JSON.stringify($.proof.proof, null, 2)}\\n\\n`\n    + `Best,\\n`\n    + `Your Government`\n});",
-          "adaptor": "@openfn/language-mailgun@0.5.21",
+          "adaptor": "@openfn/language-mailgun@0.6.0",
           "project_credential_id": "5030d8ba-e762-4031-a39b-e5c84396bd08"
         }
       },

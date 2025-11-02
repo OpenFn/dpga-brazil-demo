@@ -142,7 +142,7 @@ workflows:
           // But for simplicity of demo: just generate it here as mocked data
             const grade = generateDemoGrade();
 
-            state.data.normalized = {
+            const normalized = {
               name,
               email,
               phone,
@@ -150,12 +150,12 @@ workflows:
               grade
             };
 
-            return state;
+            return { ...state, normalized };
           });
 
       Issue-a-Verifiable-Credential:
         name: Issue a Verifiable Credential
-        adaptor: '@openfn/language-sunbird-rc@1.0.0'
+        adaptor: '@openfn/language-sunbird-rc@1.0.1'
         credential: taylor@openfn.org-TD-Sunbird-RC-Test
         body: |
           issueCredential({
@@ -174,9 +174,9 @@ workflows:
               "credentialSubject": {
                 "id": "did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450",
                 "type": "ProofOfAcademicEvaluationCredential",
-                "name": $.data.normalized.name,
-                "grade": $.data.normalized.grade,
-                "programme": $.data.normalized.programme,
+                "name": $.normalized.name,
+                "grade": $.normalized.grade,
+                "programme": $.normalized.programme,
                 "certifyingInstitute": "YourSkillsFuture Council",
                 "evaluatingInstitute": "Institute of Digital Learning, India",
               }
@@ -187,10 +187,10 @@ workflows:
           })
       Fetch-certificate-as-PDF:
         name: Fetch certificate as PDF
-        adaptor: '@openfn/language-sunbird-rc@1.0.0'
+        adaptor: '@openfn/language-sunbird-rc@1.0.1'
         credential: taylor@openfn.org-TD-Sunbird-RC-Test
         body: |
-          fn(state => ({ ...state, credentialId: state.data.credential.id }))
+          fn(state => ({ ...state, credentialId: state.data.credential.id }));
 
           getCredential($.credentialId, {
             templateId: 'cmhbkgjqo000ems0jvbeayn1h',
@@ -203,12 +203,13 @@ workflows:
           });
       Deliver-to-citizen:
         name: Deliver to citizen
-        adaptor: '@openfn/language-mailgun@latest'
+        adaptor: '@openfn/language-mailgun@0.6.0'
         credential: taylor@openfn.org-TD-Mailgun
         body: |
           send({
             from: 'admin@openfn.org',
-            to: [
+            to: $.normalized.email,
+            cc: [
               'taylor@openfn.org',
               'cheryl@open.gov.sg',
               'michel@open.gov.sg',
@@ -217,12 +218,38 @@ workflows:
               'pius@openfn.org',
               'mohit@coss.org.in',
             ],
-            subject: 'You have a new ✨ verifiable credential! 👍',
-            text: '🥳 Congratulations! The deatils are below and å PDF version is attached.\n\n'
-              + `Subject: ${JSON.stringify($.proof.credentialSubject, null, 2)}\n\n`
-              + `Proof: ${JSON.stringify($.proof.proof, null, 2)}\n\n`
-              + `Best,\n`
-              + `Your Government`,
+            subject: '✨ You have a new verifiable credential! ✅',
+            html: `<!DOCTYPE html>
+              <html>
+              <head>
+                  <meta charset="UTF-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              </head>
+              <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+                  <p>Dear ${$.normalized.name},</p>
+                  
+                  <p>🥳 Congratulations 🎉 on your new verifiable credential! The deatils are below and a PDF version is attached to this email.</p>
+                  
+                  <p><strong>Subject:</strong></p>
+                  <ul style="background-color: #f4f4f4; padding: 20px; border-radius: 5px;">
+                      ${Object.entries(state.proof.credentialSubject).map(([key, value]) => 
+                          `<li><strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}</li>`
+                      ).join('')}
+                  </ul>
+                  
+                  <p><strong>Proof:</strong></p>
+                  <ul style="background-color: #f4f4f4; padding: 20px; border-radius: 5px;">
+                      ${Object.entries(state.proof.proof).map(([key, value]) => 
+                          `<li><strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}</li>`
+                      ).join('')}
+                  </ul>
+                  
+                  <p>Best,<br>
+                  Your Government</p>
+                  
+                  <p style="color: #666;"><em>Powered 🇸🇬 FormSG and 🇮🇳 SunbirdRC. Automated by 🌍 OpenFn.</em></p>
+              </body>
+              </html>`,
             attachment: {
               filename: 'credential.pdf',
               data: $.data
@@ -230,7 +257,7 @@ workflows:
           });
       Notify-if-invalid:
         name: Notify if invalid
-        adaptor: '@openfn/language-mailgun@0.5.21'
+        adaptor: '@openfn/language-mailgun@0.6.0'
         credential: taylor@openfn.org-TD-Mailgun
         body: |
           send({
@@ -244,7 +271,7 @@ workflows:
           });
       Alert-institution-credential-issuance:
         name: Alert institution credential issuance
-        adaptor: '@openfn/language-mailgun@0.5.21'
+        adaptor: '@openfn/language-mailgun@0.6.0'
         credential: taylor@openfn.org-TD-Mailgun
         body: |
           send({
