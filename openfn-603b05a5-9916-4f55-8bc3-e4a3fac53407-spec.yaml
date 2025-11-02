@@ -1,0 +1,287 @@
+name: dpga-brazil
+description: null
+collections: null
+credentials:
+  international@open.gov.sg-OpenFn-Test:
+    name: OpenFn Test
+    owner: international@open.gov.sg
+  international@open.gov.sg-Sunbird-Demo-Instance:
+    name: Sunbird Demo Instance
+    owner: international@open.gov.sg
+workflows:
+  DHIS2-to-OpenCRVS-and-OpenSPP-Integration:
+    name: DHIS2-to-OpenCRVS-and-OpenSPP-Integration
+    jobs:
+      Fetch-New-Registrations-from-DHIS2:
+        name: Fetch New Registrations from DHIS2
+        adaptor: '@openfn/language-dhis2@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Create-Entities-in-OpenCRVS:
+        name: Create Entities in OpenCRVS
+        adaptor: '@openfn/language-opencrvs@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Check-Eligibility-for-Social-Protection:
+        name: Check Eligibility for Social Protection
+        adaptor: '@openfn/language-common@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Enroll-Eligible-Children-in-OpenSPP:
+        name: Enroll Eligible Children in OpenSPP
+        adaptor: '@openfn/language-openspp@latest'
+        credential: null
+        body: |
+          // Add operations here
+    triggers:
+      cron:
+        type: cron
+        cron_expression: '0 0 * * *'
+        enabled: false
+    edges:
+      cron->Fetch-New-Registrations-from-DHIS2:
+        source_trigger: cron
+        target_job: Fetch-New-Registrations-from-DHIS2
+        condition_type: always
+        enabled: true
+      Fetch-New-Registrations-from-DHIS2->Create-Entities-in-OpenCRVS:
+        source_job: Fetch-New-Registrations-from-DHIS2
+        target_job: Create-Entities-in-OpenCRVS
+        condition_type: on_job_success
+        enabled: true
+      Create-Entities-in-OpenCRVS->Check-Eligibility-for-Social-Protection:
+        source_job: Create-Entities-in-OpenCRVS
+        target_job: Check-Eligibility-for-Social-Protection
+        condition_type: on_job_success
+        enabled: true
+      Check-Eligibility-for-Social-Protection->Enroll-Eligible-Children-in-OpenSPP:
+        source_job: Check-Eligibility-for-Social-Protection
+        target_job: Enroll-Eligible-Children-in-OpenSPP
+        condition_type: on_job_success
+        enabled: true
+  DHIS2-to-OpenCRVS-via-XRoad:
+    name: DHIS2-to-OpenCRVS-via-XRoad
+    jobs:
+      Fetch-TEIs-from-DHIS2-via-X-Road:
+        name: Fetch TEIs from DHIS2 via X-Road
+        adaptor: '@openfn/language-dhis2@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Transform-TEIs-to-National-Standard:
+        name: Transform TEIs to National Standard
+        adaptor: '@openfn/language-claude@1.0.14'
+        credential: null
+        body: |
+          // Add operations here
+      Create-IDs-in-OpenCRVS-via-X-Road:
+        name: Create IDs in OpenCRVS via X-Road
+        adaptor: '@openfn/language-opencrvs@latest'
+        credential: null
+        body: |
+          // Add operations here
+      analyze-error:
+        name: analyze error
+        adaptor: '@openfn/language-chatgpt@2.0.3'
+        credential: null
+        body: |
+          // Add operations here
+      Send-DPI-downtime-alert:
+        name: Send DPI downtime alert
+        adaptor: '@openfn/language-mailgun@0.5.19'
+        credential: null
+        body: |
+          // Add operations here
+      add-to-dashboard:
+        name: add to dashboard
+        adaptor: '@openfn/language-azure-storage@3.0.2'
+        credential: null
+        body: |
+          // Check out the Job Writing Guide for help getting started:
+          // https://docs.openfn.org/documentation/jobs/job-writing-guide
+
+    triggers:
+      webhook:
+        type: webhook
+        enabled: false
+    edges:
+      webhook->Fetch-TEIs-from-DHIS2-via-X-Road:
+        source_trigger: webhook
+        target_job: Fetch-TEIs-from-DHIS2-via-X-Road
+        condition_type: always
+        enabled: true
+      Fetch-TEIs-from-DHIS2-via-X-Road->Transform-TEIs-to-National-Standard:
+        source_job: Fetch-TEIs-from-DHIS2-via-X-Road
+        target_job: Transform-TEIs-to-National-Standard
+        condition_type: on_job_success
+        enabled: true
+      Transform-TEIs-to-National-Standard->Create-IDs-in-OpenCRVS-via-X-Road:
+        source_job: Transform-TEIs-to-National-Standard
+        target_job: Create-IDs-in-OpenCRVS-via-X-Road
+        condition_type: on_job_success
+        enabled: true
+      Fetch-TEIs-from-DHIS2-via-X-Road->analyze-error:
+        source_job: Fetch-TEIs-from-DHIS2-via-X-Road
+        target_job: analyze-error
+        condition_type: on_job_failure
+        enabled: true
+      Transform-TEIs-to-National-Standard->analyze-error:
+        source_job: Transform-TEIs-to-National-Standard
+        target_job: analyze-error
+        condition_type: on_job_failure
+        enabled: true
+      Create-IDs-in-OpenCRVS-via-X-Road->analyze-error:
+        source_job: Create-IDs-in-OpenCRVS-via-X-Road
+        target_job: analyze-error
+        condition_type: on_job_failure
+        enabled: true
+      analyze-error->Send-DPI-downtime-alert:
+        source_job: analyze-error
+        target_job: Send-DPI-downtime-alert
+        condition_type: on_job_success
+        enabled: true
+      analyze-error->add-to-dashboard:
+        source_job: analyze-error
+        target_job: add-to-dashboard
+        condition_type: on_job_success
+        enabled: true
+  Singapore-Sunbird-Demo:
+    name: Singapore Sunbird Demo
+    jobs:
+      Verify-and-Decrypt-Responses:
+        name: Verify and Decrypt Responses
+        adaptor: '@openfn/language-formsg@1.0.1'
+        credential: international@open.gov.sg-OpenFn-Test
+        body: |
+          decryptSubmission($.data.data, {
+            verifySignature: true,
+            signatureHeader: $.request.headers['x-formsg-signature']
+          })
+      Transform-Form-Data-and-Fetch-Course-Score:
+        name: Transform Form Data and Fetch Course Score
+        adaptor: '@openfn/language-common@latest'
+        credential: null
+        body: |
+          function getAnswer(responses, label) {
+            const f = responses.find(r => r.question === label);
+            return f ? f.answer : null;
+          }
+
+          function generateDemoGrade() {
+            const base = 8.5 + Math.random() * 1.4; // 8.5 – 9.9
+            const rounded = Math.round(base * 100) / 100;
+            return `${rounded} / 10 (Distinction)`;
+          }
+
+          fn(state => {
+            const responses = state.data.responses || state.data.data?.responses || [];
+
+            const name = getAnswer(responses, 'Name') || 'Learner';
+            const email = getAnswer(responses, 'Email') || 'unknown@example.com';
+            const phone = getAnswer(responses, 'Mobile') || '+65-0000-0000';
+            const programme = getAnswer(responses, 'Course') || 'Data Analytics';
+
+            
+          // In real life use cases, this is fetched from an external system
+          // But for simplicity of demo: just generate it here as mocked data
+            const grade = generateDemoGrade();
+
+            state.data.normalized = {
+              name,
+              email,
+              phone,
+              programme,
+              grade
+            };
+
+            return state;
+          });
+
+      Issue-a-Verifiable-Credential:
+        name: Issue a Verifiable Credential
+        adaptor: '@openfn/language-http@7.2.3'
+        credential: international@open.gov.sg-Sunbird-Demo-Instance
+        body: |
+          post("http://98.70.25.20/credential/credentials/issue", {
+              credential: {
+                "@context": [
+                  "https://www.w3.org/2018/credentials/v1",
+                  "https://littlemight.github.io/sunbird-demo-vc-context/demo-context.json"
+                ],
+                "type": [
+                  "VerifiableCredential",
+                  "ProofOfAcademicEvaluationCredential"
+                ],
+                "issuer": "did:web:example.com:identifier:9536bc3b-3f4b-4cec-8c48-f67c9c4d63fc",
+                "issuanceDate": new Date().toISOString(),
+                "expirationDate": new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString(),
+                "credentialSubject": {
+                  "id": "did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450",
+                  "type": "ProofOfAcademicEvaluationCredential",
+                  "name": $.data.normalized.name,
+                  "grade": $.data.normalized.grade,
+                  "programme": $.data.normalized.programme,
+                  "certifyingInstitute": "YourSkillsFuture Council",
+                  "evaluatingInstitute": "Institute of Digital Learning, India",
+                }
+              },
+              "credentialSchemaId": "did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450",
+              "credentialSchemaVersion": "1.0.0",
+              "tags": ["demo","education","cross-border"]
+            })
+
+      Fetch-certificate-as-PDF:
+        name: Fetch certificate as PDF
+        adaptor: '@openfn/language-http@7.2.4'
+        credential: international@open.gov.sg-Sunbird-Demo-Instance
+        body: |
+          // example credentialId: did:rcw:499efc9d-8daf-4cde-9f9e-03a6564da2e6
+          get(`http://98.70.25.20/credential/credentials/${$.data.credential.id}`, {headers: {
+                'Accept': 'application/pdf', 
+                // if it's application/json, will return a JSON with the cryptographic value to proof the certificate.
+                'templateId': 'cmhcoaxip000mms0jpvvo4p6o' // this is the handlebar HTML template id to generate the PDF
+              }})
+
+
+          // not sure how to get the PDF in the response output of this job?
+      Send-to-whatsapp-or-email:
+        name: Send to whatsapp or email
+        adaptor: '@openfn/language-whatsapp@1.0.6'
+        credential: null
+        body: |
+          // Check out the Job Writing Guide for help getting started:
+          // https://docs.openfn.org/documentation/jobs/job-writing-guide
+
+    triggers:
+      webhook:
+        type: webhook
+        enabled: true
+    edges:
+      webhook->Verify-and-Decrypt-Responses:
+        source_trigger: webhook
+        target_job: Verify-and-Decrypt-Responses
+        condition_type: always
+        enabled: true
+      Verify-and-Decrypt-Responses->Transform-Form-Data-and-Fetch-Course-Score:
+        source_job: Verify-and-Decrypt-Responses
+        target_job: Transform-Form-Data-and-Fetch-Course-Score
+        condition_type: on_job_success
+        enabled: true
+      Transform-Form-Data-and-Fetch-Course-Score->Issue-a-Verifiable-Credential:
+        source_job: Transform-Form-Data-and-Fetch-Course-Score
+        target_job: Issue-a-Verifiable-Credential
+        condition_type: on_job_success
+        enabled: true
+      Issue-a-Verifiable-Credential->Fetch-certificate-as-PDF:
+        source_job: Issue-a-Verifiable-Credential
+        target_job: Fetch-certificate-as-PDF
+        condition_type: on_job_success
+        enabled: true
+      Fetch-certificate-as-PDF->Send-to-whatsapp-or-email:
+        source_job: Fetch-certificate-as-PDF
+        target_job: Send-to-whatsapp-or-email
+        condition_type: on_job_success
+        enabled: true

@@ -1,0 +1,309 @@
+{
+  "env": "main",
+  "id": "603b05a5-9916-4f55-8bc3-e4a3fac53407",
+  "name": "dpga-brazil",
+  "description": null,
+  "color": null,
+  "concurrency": 4,
+  "inserted_at": "2025-09-30T06:59:34Z",
+  "updated_at": "2025-10-02T14:49:21Z",
+  "parent_id": null,
+  "scheduled_deletion": null,
+  "history_retention_period": 365,
+  "dataclip_retention_period": null,
+  "retention_policy": "retain_all",
+  "project_credentials": {
+    "international@open.gov.sg-OpenFn-Test": {
+      "id": "924fcb67-909a-4490-923d-f835ac4ff5cf",
+      "name": "OpenFn Test",
+      "owner": "international@open.gov.sg"
+    },
+    "international@open.gov.sg-Sunbird-Demo-Instance": {
+      "id": "830832bc-8dab-4c4e-b0ef-d6dcf5681683",
+      "name": "Sunbird Demo Instance",
+      "owner": "international@open.gov.sg"
+    }
+  },
+  "version_history": [],
+  "allow_support_access": false,
+  "collections": {},
+  "requires_mfa": false,
+  "workflows": {
+    "DHIS2-to-OpenCRVS-and-OpenSPP-Integration": {
+      "id": "c93c624f-fe51-4653-9466-9224c51605cc",
+      "name": "DHIS2-to-OpenCRVS-and-OpenSPP-Integration",
+      "inserted_at": "2025-10-17T12:19:09.967581Z",
+      "lock_version": 1,
+      "triggers": {
+        "cron": {
+          "enabled": false,
+          "id": "c97539d4-7a1c-4e4c-b004-2f3089666dfd",
+          "type": "cron",
+          "cron_expression": "0 0 * * *"
+        }
+      },
+      "jobs": {
+        "Fetch-New-Registrations-from-DHIS2": {
+          "id": "88a3a6c6-f36d-441e-96a2-7a47fc412a07",
+          "name": "Fetch New Registrations from DHIS2",
+          "body": "// Add operations here",
+          "adaptor": "@openfn/language-dhis2@latest",
+          "project_credential_id": null
+        },
+        "Create-Entities-in-OpenCRVS": {
+          "id": "6225845e-2480-4549-9d94-5cca65f787fa",
+          "name": "Create Entities in OpenCRVS",
+          "body": "// Add operations here",
+          "adaptor": "@openfn/language-opencrvs@latest",
+          "project_credential_id": null
+        },
+        "Check-Eligibility-for-Social-Protection": {
+          "id": "09c76b90-e604-4017-a85f-d8d1c9039152",
+          "name": "Check Eligibility for Social Protection",
+          "body": "// Add operations here",
+          "adaptor": "@openfn/language-common@latest",
+          "project_credential_id": null
+        },
+        "Enroll-Eligible-Children-in-OpenSPP": {
+          "id": "af4297f0-c728-45ed-8938-b579aafa782a",
+          "name": "Enroll Eligible Children in OpenSPP",
+          "body": "// Add operations here",
+          "adaptor": "@openfn/language-openspp@latest",
+          "project_credential_id": null
+        }
+      },
+      "edges": {
+        "cron->Fetch-New-Registrations-from-DHIS2": {
+          "enabled": true,
+          "id": "ce7a147e-106b-48c5-a019-095d4e91e169",
+          "target_job_id": "88a3a6c6-f36d-441e-96a2-7a47fc412a07",
+          "source_trigger_id": "c97539d4-7a1c-4e4c-b004-2f3089666dfd",
+          "condition_type": "always"
+        },
+        "Fetch-New-Registrations-from-DHIS2->Create-Entities-in-OpenCRVS": {
+          "enabled": true,
+          "id": "d3846c0d-102f-43b4-8ec6-3ef26025c0e3",
+          "target_job_id": "6225845e-2480-4549-9d94-5cca65f787fa",
+          "source_job_id": "88a3a6c6-f36d-441e-96a2-7a47fc412a07",
+          "condition_type": "on_job_success"
+        },
+        "Create-Entities-in-OpenCRVS->Check-Eligibility-for-Social-Protection": {
+          "enabled": true,
+          "id": "74bfb57a-d2f9-468e-a7c2-2163427c3700",
+          "target_job_id": "09c76b90-e604-4017-a85f-d8d1c9039152",
+          "source_job_id": "6225845e-2480-4549-9d94-5cca65f787fa",
+          "condition_type": "on_job_success"
+        },
+        "Check-Eligibility-for-Social-Protection->Enroll-Eligible-Children-in-OpenSPP": {
+          "enabled": true,
+          "id": "cd3e46dc-3ea3-4f3d-b8cb-0bdcad9d9f96",
+          "target_job_id": "af4297f0-c728-45ed-8938-b579aafa782a",
+          "source_job_id": "09c76b90-e604-4017-a85f-d8d1c9039152",
+          "condition_type": "on_job_success"
+        }
+      }
+    },
+    "DHIS2-to-OpenCRVS-via-XRoad": {
+      "id": "ad3f2915-ee42-481d-b77c-52f58cd38fc4",
+      "name": "DHIS2-to-OpenCRVS-via-XRoad",
+      "inserted_at": "2025-10-21T09:17:01.515973Z",
+      "lock_version": 7,
+      "triggers": {
+        "webhook": {
+          "enabled": false,
+          "id": "f6b981ef-83aa-4791-856e-0d26deacf466",
+          "type": "webhook"
+        }
+      },
+      "jobs": {
+        "Fetch-TEIs-from-DHIS2-via-X-Road": {
+          "id": "ea924f6e-9da9-46bd-a00d-88795c31f105",
+          "name": "Fetch TEIs from DHIS2 via X-Road",
+          "body": "// Add operations here",
+          "adaptor": "@openfn/language-dhis2@latest",
+          "project_credential_id": null
+        },
+        "Transform-TEIs-to-National-Standard": {
+          "id": "82f5a3b0-7af6-478f-a6a1-a0ca69cd609a",
+          "name": "Transform TEIs to National Standard",
+          "body": "// Add operations here",
+          "adaptor": "@openfn/language-claude@1.0.14",
+          "project_credential_id": null
+        },
+        "Create-IDs-in-OpenCRVS-via-X-Road": {
+          "id": "01bb7820-83f1-46c3-9387-db6a96cf8bcc",
+          "name": "Create IDs in OpenCRVS via X-Road",
+          "body": "// Add operations here",
+          "adaptor": "@openfn/language-opencrvs@latest",
+          "project_credential_id": null
+        },
+        "analyze-error": {
+          "id": "da95cfd4-d7aa-4048-8483-0d03f2857fe5",
+          "name": "analyze error",
+          "body": "// Add operations here",
+          "adaptor": "@openfn/language-chatgpt@2.0.3",
+          "project_credential_id": null
+        },
+        "Send-DPI-downtime-alert": {
+          "id": "24125ee6-4697-4a97-9f1c-2366471e2192",
+          "name": "Send DPI downtime alert",
+          "body": "// Add operations here",
+          "adaptor": "@openfn/language-mailgun@0.5.19",
+          "project_credential_id": null
+        },
+        "add-to-dashboard": {
+          "id": "be681c9f-9ff6-4616-84b1-9fa4b999480a",
+          "name": "add to dashboard",
+          "body": "// Check out the Job Writing Guide for help getting started:\n// https://docs.openfn.org/documentation/jobs/job-writing-guide\n",
+          "adaptor": "@openfn/language-azure-storage@3.0.2",
+          "project_credential_id": null
+        }
+      },
+      "edges": {
+        "webhook->Fetch-TEIs-from-DHIS2-via-X-Road": {
+          "enabled": true,
+          "id": "078ae3e2-b8ff-4872-98eb-79deb878f93b",
+          "target_job_id": "ea924f6e-9da9-46bd-a00d-88795c31f105",
+          "source_trigger_id": "f6b981ef-83aa-4791-856e-0d26deacf466",
+          "condition_type": "always"
+        },
+        "Fetch-TEIs-from-DHIS2-via-X-Road->Transform-TEIs-to-National-Standard": {
+          "enabled": true,
+          "id": "3018358b-36b2-4b5f-9ee5-420e0098378e",
+          "target_job_id": "82f5a3b0-7af6-478f-a6a1-a0ca69cd609a",
+          "source_job_id": "ea924f6e-9da9-46bd-a00d-88795c31f105",
+          "condition_type": "on_job_success"
+        },
+        "Transform-TEIs-to-National-Standard->Create-IDs-in-OpenCRVS-via-X-Road": {
+          "enabled": true,
+          "id": "04a6254b-d384-4af4-b2f0-28ecf746f51c",
+          "target_job_id": "01bb7820-83f1-46c3-9387-db6a96cf8bcc",
+          "source_job_id": "82f5a3b0-7af6-478f-a6a1-a0ca69cd609a",
+          "condition_type": "on_job_success"
+        },
+        "Fetch-TEIs-from-DHIS2-via-X-Road->analyze-error": {
+          "enabled": true,
+          "id": "c719c036-59b7-4353-b30d-e0d9267d5507",
+          "target_job_id": "da95cfd4-d7aa-4048-8483-0d03f2857fe5",
+          "source_job_id": "ea924f6e-9da9-46bd-a00d-88795c31f105",
+          "condition_type": "on_job_failure"
+        },
+        "Transform-TEIs-to-National-Standard->analyze-error": {
+          "enabled": true,
+          "id": "e728a06d-9d58-46d4-a7bd-ad0c1f069671",
+          "target_job_id": "da95cfd4-d7aa-4048-8483-0d03f2857fe5",
+          "source_job_id": "82f5a3b0-7af6-478f-a6a1-a0ca69cd609a",
+          "condition_type": "on_job_failure"
+        },
+        "Create-IDs-in-OpenCRVS-via-X-Road->analyze-error": {
+          "enabled": true,
+          "id": "99be9b03-3113-4c51-86c0-a78ece6c8f65",
+          "target_job_id": "da95cfd4-d7aa-4048-8483-0d03f2857fe5",
+          "source_job_id": "01bb7820-83f1-46c3-9387-db6a96cf8bcc",
+          "condition_type": "on_job_failure"
+        },
+        "analyze-error->Send-DPI-downtime-alert": {
+          "enabled": true,
+          "id": "a154977c-6b95-4faf-af65-7d931b6f6459",
+          "target_job_id": "24125ee6-4697-4a97-9f1c-2366471e2192",
+          "source_job_id": "da95cfd4-d7aa-4048-8483-0d03f2857fe5",
+          "condition_type": "on_job_success"
+        },
+        "analyze-error->add-to-dashboard": {
+          "enabled": true,
+          "id": "33f27377-d997-44b9-8ab4-e5b046b2082c",
+          "target_job_id": "be681c9f-9ff6-4616-84b1-9fa4b999480a",
+          "source_job_id": "da95cfd4-d7aa-4048-8483-0d03f2857fe5",
+          "condition_type": "on_job_success"
+        }
+      }
+    },
+    "Singapore-Sunbird-Demo": {
+      "id": "a586690c-9bce-480f-9dc3-f560d531a9fc",
+      "name": "Singapore Sunbird Demo",
+      "inserted_at": "2025-10-30T06:26:40.009203Z",
+      "lock_version": 33,
+      "triggers": {
+        "webhook": {
+          "enabled": true,
+          "id": "45ce7b6b-545e-42e2-9021-885484809f25",
+          "type": "webhook"
+        }
+      },
+      "jobs": {
+        "Verify-and-Decrypt-Responses": {
+          "id": "4482c977-a4b1-41a3-b77f-ffc510e8d2e2",
+          "name": "Verify and Decrypt Responses",
+          "body": "decryptSubmission($.data.data, {\n  verifySignature: true,\n  signatureHeader: $.request.headers['x-formsg-signature']\n})",
+          "adaptor": "@openfn/language-formsg@1.0.1",
+          "project_credential_id": "924fcb67-909a-4490-923d-f835ac4ff5cf"
+        },
+        "Transform-Form-Data-and-Fetch-Course-Score": {
+          "id": "5373fcb3-9c55-4a6d-86eb-42496a84acc2",
+          "name": "Transform Form Data and Fetch Course Score",
+          "body": "function getAnswer(responses, label) {\n  const f = responses.find(r => r.question === label);\n  return f ? f.answer : null;\n}\n\nfunction generateDemoGrade() {\n  const base = 8.5 + Math.random() * 1.4; // 8.5 – 9.9\n  const rounded = Math.round(base * 100) / 100;\n  return `${rounded} / 10 (Distinction)`;\n}\n\nfn(state => {\n  const responses = state.data.responses || state.data.data?.responses || [];\n\n  const name = getAnswer(responses, 'Name') || 'Learner';\n  const email = getAnswer(responses, 'Email') || 'unknown@example.com';\n  const phone = getAnswer(responses, 'Mobile') || '+65-0000-0000';\n  const programme = getAnswer(responses, 'Course') || 'Data Analytics';\n\n  \n// In real life use cases, this is fetched from an external system\n// But for simplicity of demo: just generate it here as mocked data\n  const grade = generateDemoGrade();\n\n  state.data.normalized = {\n    name,\n    email,\n    phone,\n    programme,\n    grade\n  };\n\n  return state;\n});\n",
+          "adaptor": "@openfn/language-common@latest",
+          "project_credential_id": null
+        },
+        "Issue-a-Verifiable-Credential": {
+          "id": "651b69ee-f927-42a8-8cce-712a8f1c96de",
+          "name": "Issue a Verifiable Credential",
+          "body": "post(\"http://98.70.25.20/credential/credentials/issue\", {\n    credential: {\n      \"@context\": [\n        \"https://www.w3.org/2018/credentials/v1\",\n        \"https://littlemight.github.io/sunbird-demo-vc-context/demo-context.json\"\n      ],\n      \"type\": [\n        \"VerifiableCredential\",\n        \"ProofOfAcademicEvaluationCredential\"\n      ],\n      \"issuer\": \"did:web:example.com:identifier:9536bc3b-3f4b-4cec-8c48-f67c9c4d63fc\",\n      \"issuanceDate\": new Date().toISOString(),\n      \"expirationDate\": new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString(),\n      \"credentialSubject\": {\n        \"id\": \"did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450\",\n        \"type\": \"ProofOfAcademicEvaluationCredential\",\n        \"name\": $.data.normalized.name,\n        \"grade\": $.data.normalized.grade,\n        \"programme\": $.data.normalized.programme,\n        \"certifyingInstitute\": \"YourSkillsFuture Council\",\n        \"evaluatingInstitute\": \"Institute of Digital Learning, India\",\n      }\n    },\n    \"credentialSchemaId\": \"did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450\",\n    \"credentialSchemaVersion\": \"1.0.0\",\n    \"tags\": [\"demo\",\"education\",\"cross-border\"]\n  })\n",
+          "adaptor": "@openfn/language-http@7.2.3",
+          "project_credential_id": "830832bc-8dab-4c4e-b0ef-d6dcf5681683"
+        },
+        "Fetch-certificate-as-PDF": {
+          "id": "5938ec99-a16a-493e-8d83-4aafd10f1dea",
+          "name": "Fetch certificate as PDF",
+          "body": "// example credentialId: did:rcw:499efc9d-8daf-4cde-9f9e-03a6564da2e6\nget(`http://98.70.25.20/credential/credentials/${$.data.credential.id}`, {headers: {\n      'Accept': 'application/pdf', \n      // if it's application/json, will return a JSON with the cryptographic value to proof the certificate.\n      'templateId': 'cmhcoaxip000mms0jpvvo4p6o' // this is the handlebar HTML template id to generate the PDF\n    }})\n\n\n// not sure how to get the PDF in the response output of this job?",
+          "adaptor": "@openfn/language-http@7.2.4",
+          "project_credential_id": "830832bc-8dab-4c4e-b0ef-d6dcf5681683"
+        },
+        "Send-to-whatsapp-or-email": {
+          "id": "7c5e6bfc-49ed-4c09-8980-f984e4d36d32",
+          "name": "Send to whatsapp or email",
+          "body": "// Check out the Job Writing Guide for help getting started:\n// https://docs.openfn.org/documentation/jobs/job-writing-guide\n",
+          "adaptor": "@openfn/language-whatsapp@1.0.6",
+          "project_credential_id": null
+        }
+      },
+      "edges": {
+        "webhook->Verify-and-Decrypt-Responses": {
+          "enabled": true,
+          "id": "b125dbc3-e67f-4ab6-b112-c88568becb3c",
+          "target_job_id": "4482c977-a4b1-41a3-b77f-ffc510e8d2e2",
+          "source_trigger_id": "45ce7b6b-545e-42e2-9021-885484809f25",
+          "condition_type": "always"
+        },
+        "Verify-and-Decrypt-Responses->Transform-Form-Data-and-Fetch-Course-Score": {
+          "enabled": true,
+          "id": "968ceeb5-c5a2-4886-8de4-abc07b12faa3",
+          "target_job_id": "5373fcb3-9c55-4a6d-86eb-42496a84acc2",
+          "source_job_id": "4482c977-a4b1-41a3-b77f-ffc510e8d2e2",
+          "condition_type": "on_job_success"
+        },
+        "Transform-Form-Data-and-Fetch-Course-Score->Issue-a-Verifiable-Credential": {
+          "enabled": true,
+          "id": "df994ff0-8893-41ab-8ef6-b74a55927619",
+          "target_job_id": "651b69ee-f927-42a8-8cce-712a8f1c96de",
+          "source_job_id": "5373fcb3-9c55-4a6d-86eb-42496a84acc2",
+          "condition_type": "on_job_success"
+        },
+        "Issue-a-Verifiable-Credential->Fetch-certificate-as-PDF": {
+          "enabled": true,
+          "id": "d8ac23dd-b656-4773-85e1-72fd4fed9e66",
+          "target_job_id": "5938ec99-a16a-493e-8d83-4aafd10f1dea",
+          "source_job_id": "651b69ee-f927-42a8-8cce-712a8f1c96de",
+          "condition_type": "on_job_success"
+        },
+        "Fetch-certificate-as-PDF->Send-to-whatsapp-or-email": {
+          "enabled": true,
+          "id": "321cff88-f684-4a25-842e-b45669b226d3",
+          "target_job_id": "7c5e6bfc-49ed-4c09-8980-f984e4d36d32",
+          "source_job_id": "5938ec99-a16a-493e-8d83-4aafd10f1dea",
+          "condition_type": "on_job_success"
+        }
+      }
+    }
+  }
+}
