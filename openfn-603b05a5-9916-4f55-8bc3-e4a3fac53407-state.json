@@ -22,87 +22,21 @@
       "id": "830832bc-8dab-4c4e-b0ef-d6dcf5681683",
       "name": "Sunbird Demo Instance",
       "owner": "international@open.gov.sg"
+    },
+    "taylor@openfn.org-TD-Sunbird-RC-Test": {
+      "id": "5610a2a6-51ca-4698-850d-0225ba1658f0",
+      "name": "TD Sunbird RC Test",
+      "owner": "taylor@openfn.org"
+    },
+    "taylor@openfn.org-TD-Mailgun": {
+      "id": "5030d8ba-e762-4031-a39b-e5c84396bd08",
+      "name": "TD Mailgun",
+      "owner": "taylor@openfn.org"
     }
   },
   "version_history": [],
-  "allow_support_access": false,
   "collections": {},
-  "requires_mfa": false,
   "workflows": {
-    "DHIS2-to-OpenCRVS-and-OpenSPP-Integration": {
-      "id": "c93c624f-fe51-4653-9466-9224c51605cc",
-      "name": "DHIS2-to-OpenCRVS-and-OpenSPP-Integration",
-      "inserted_at": "2025-10-17T12:19:09.967581Z",
-      "lock_version": 1,
-      "triggers": {
-        "cron": {
-          "enabled": false,
-          "id": "c97539d4-7a1c-4e4c-b004-2f3089666dfd",
-          "type": "cron",
-          "cron_expression": "0 0 * * *"
-        }
-      },
-      "jobs": {
-        "Fetch-New-Registrations-from-DHIS2": {
-          "id": "88a3a6c6-f36d-441e-96a2-7a47fc412a07",
-          "name": "Fetch New Registrations from DHIS2",
-          "body": "// Add operations here",
-          "adaptor": "@openfn/language-dhis2@latest",
-          "project_credential_id": null
-        },
-        "Create-Entities-in-OpenCRVS": {
-          "id": "6225845e-2480-4549-9d94-5cca65f787fa",
-          "name": "Create Entities in OpenCRVS",
-          "body": "// Add operations here",
-          "adaptor": "@openfn/language-opencrvs@latest",
-          "project_credential_id": null
-        },
-        "Check-Eligibility-for-Social-Protection": {
-          "id": "09c76b90-e604-4017-a85f-d8d1c9039152",
-          "name": "Check Eligibility for Social Protection",
-          "body": "// Add operations here",
-          "adaptor": "@openfn/language-common@latest",
-          "project_credential_id": null
-        },
-        "Enroll-Eligible-Children-in-OpenSPP": {
-          "id": "af4297f0-c728-45ed-8938-b579aafa782a",
-          "name": "Enroll Eligible Children in OpenSPP",
-          "body": "// Add operations here",
-          "adaptor": "@openfn/language-openspp@latest",
-          "project_credential_id": null
-        }
-      },
-      "edges": {
-        "cron->Fetch-New-Registrations-from-DHIS2": {
-          "enabled": true,
-          "id": "ce7a147e-106b-48c5-a019-095d4e91e169",
-          "target_job_id": "88a3a6c6-f36d-441e-96a2-7a47fc412a07",
-          "source_trigger_id": "c97539d4-7a1c-4e4c-b004-2f3089666dfd",
-          "condition_type": "always"
-        },
-        "Fetch-New-Registrations-from-DHIS2->Create-Entities-in-OpenCRVS": {
-          "enabled": true,
-          "id": "d3846c0d-102f-43b4-8ec6-3ef26025c0e3",
-          "target_job_id": "6225845e-2480-4549-9d94-5cca65f787fa",
-          "source_job_id": "88a3a6c6-f36d-441e-96a2-7a47fc412a07",
-          "condition_type": "on_job_success"
-        },
-        "Create-Entities-in-OpenCRVS->Check-Eligibility-for-Social-Protection": {
-          "enabled": true,
-          "id": "74bfb57a-d2f9-468e-a7c2-2163427c3700",
-          "target_job_id": "09c76b90-e604-4017-a85f-d8d1c9039152",
-          "source_job_id": "6225845e-2480-4549-9d94-5cca65f787fa",
-          "condition_type": "on_job_success"
-        },
-        "Check-Eligibility-for-Social-Protection->Enroll-Eligible-Children-in-OpenSPP": {
-          "enabled": true,
-          "id": "cd3e46dc-3ea3-4f3d-b8cb-0bdcad9d9f96",
-          "target_job_id": "af4297f0-c728-45ed-8938-b579aafa782a",
-          "source_job_id": "09c76b90-e604-4017-a85f-d8d1c9039152",
-          "condition_type": "on_job_success"
-        }
-      }
-    },
     "DHIS2-to-OpenCRVS-via-XRoad": {
       "id": "ad3f2915-ee42-481d-b77c-52f58cd38fc4",
       "name": "DHIS2-to-OpenCRVS-via-XRoad",
@@ -218,11 +152,11 @@
         }
       }
     },
-    "Singapore-Sunbird-Demo": {
+    "FormSG-and-Sunbird-RC": {
       "id": "a586690c-9bce-480f-9dc3-f560d531a9fc",
-      "name": "Singapore Sunbird Demo",
-      "inserted_at": "2025-10-30T06:26:40.009203Z",
-      "lock_version": 33,
+      "name": "FormSG and Sunbird RC",
+      "inserted_at": "2025-11-02T13:04:26.430411Z",
+      "lock_version": 60,
       "triggers": {
         "webhook": {
           "enabled": true,
@@ -248,23 +182,23 @@
         "Issue-a-Verifiable-Credential": {
           "id": "651b69ee-f927-42a8-8cce-712a8f1c96de",
           "name": "Issue a Verifiable Credential",
-          "body": "post(\"http://98.70.25.20/credential/credentials/issue\", {\n    credential: {\n      \"@context\": [\n        \"https://www.w3.org/2018/credentials/v1\",\n        \"https://littlemight.github.io/sunbird-demo-vc-context/demo-context.json\"\n      ],\n      \"type\": [\n        \"VerifiableCredential\",\n        \"ProofOfAcademicEvaluationCredential\"\n      ],\n      \"issuer\": \"did:web:example.com:identifier:9536bc3b-3f4b-4cec-8c48-f67c9c4d63fc\",\n      \"issuanceDate\": new Date().toISOString(),\n      \"expirationDate\": new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString(),\n      \"credentialSubject\": {\n        \"id\": \"did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450\",\n        \"type\": \"ProofOfAcademicEvaluationCredential\",\n        \"name\": $.data.normalized.name,\n        \"grade\": $.data.normalized.grade,\n        \"programme\": $.data.normalized.programme,\n        \"certifyingInstitute\": \"YourSkillsFuture Council\",\n        \"evaluatingInstitute\": \"Institute of Digital Learning, India\",\n      }\n    },\n    \"credentialSchemaId\": \"did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450\",\n    \"credentialSchemaVersion\": \"1.0.0\",\n    \"tags\": [\"demo\",\"education\",\"cross-border\"]\n  })\n",
-          "adaptor": "@openfn/language-http@7.2.3",
-          "project_credential_id": "830832bc-8dab-4c4e-b0ef-d6dcf5681683"
+          "body": "issueCredential({\n  credential: {\n    \"@context\": [\n      \"https://www.w3.org/2018/credentials/v1\",\n      \"https://littlemight.github.io/sunbird-demo-vc-context/demo-context.json\"\n    ],\n    \"type\": [\n      \"VerifiableCredential\",\n      \"ProofOfAcademicEvaluationCredential\"\n    ],\n    \"issuer\": \"did:web:example.com:identifier:9536bc3b-3f4b-4cec-8c48-f67c9c4d63fc\",\n    \"issuanceDate\": new Date().toISOString(),\n    \"expirationDate\": new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString(),\n    \"credentialSubject\": {\n      \"id\": \"did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450\",\n      \"type\": \"ProofOfAcademicEvaluationCredential\",\n      \"name\": $.data.normalized.name,\n      \"grade\": $.data.normalized.grade,\n      \"programme\": $.data.normalized.programme,\n      \"certifyingInstitute\": \"YourSkillsFuture Council\",\n      \"evaluatingInstitute\": \"Institute of Digital Learning, India\",\n    }\n  },\n  \"credentialSchemaId\": \"did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450\",\n  \"credentialSchemaVersion\": \"1.0.0\",\n  \"tags\": [\"demo\", \"education\", \"cross-border\"]\n})",
+          "adaptor": "@openfn/language-sunbird-rc@1.0.0",
+          "project_credential_id": "5610a2a6-51ca-4698-850d-0225ba1658f0"
         },
         "Fetch-certificate-as-PDF": {
           "id": "5938ec99-a16a-493e-8d83-4aafd10f1dea",
           "name": "Fetch certificate as PDF",
-          "body": "// example credentialId: did:rcw:499efc9d-8daf-4cde-9f9e-03a6564da2e6\nget(`http://98.70.25.20/credential/credentials/${$.data.credential.id}`, {headers: {\n      'Accept': 'application/pdf', \n      // if it's application/json, will return a JSON with the cryptographic value to proof the certificate.\n      'templateId': 'cmhcoaxip000mms0jpvvo4p6o' // this is the handlebar HTML template id to generate the PDF\n    }})\n\n\n// not sure how to get the PDF in the response output of this job?",
-          "adaptor": "@openfn/language-http@7.2.4",
-          "project_credential_id": "830832bc-8dab-4c4e-b0ef-d6dcf5681683"
+          "body": "fn(state => ({ ...state, credentialId: state.data.credential.id }))\n\ngetCredential($.credentialId, {\n  templateId: 'cmhbkgjqo000ems0jvbeayn1h',\n});\n\nfn(state => ({ ...state, proof: state.data }));\n\ndownloadCredential($.credentialId, {\n  templateId: 'cmhbkgjqo000ems0jvbeayn1h',\n});",
+          "adaptor": "@openfn/language-sunbird-rc@1.0.0",
+          "project_credential_id": "5610a2a6-51ca-4698-850d-0225ba1658f0"
         },
-        "Send-to-whatsapp-or-email": {
+        "Send-to-citizen": {
           "id": "7c5e6bfc-49ed-4c09-8980-f984e4d36d32",
-          "name": "Send to whatsapp or email",
-          "body": "// Check out the Job Writing Guide for help getting started:\n// https://docs.openfn.org/documentation/jobs/job-writing-guide\n",
-          "adaptor": "@openfn/language-whatsapp@1.0.6",
-          "project_credential_id": null
+          "name": "Send to citizen",
+          "body": "send({\n  from: 'admin@openfn.org',\n  to: ['taylor@openfn.org', 'downs.taylor@gmail.com'],\n  subject: 'Test DPGA VCs',\n  text: 'Check out your verifiable credential: \\n\\n'\n    + `Subject: ${JSON.stringify($.proof.credentialSubject, null, 2)}\\n\\n`\n    + `Proof: ${JSON.stringify($.proof.proof, null, 2)}\\n\\n`\n    + `Best,\\n`\n    + `Your Government`,\n  attachment: {\n    filename: 'credential.pdf',\n    data: $.data\n  },\n});",
+          "adaptor": "@openfn/language-mailgun@latest",
+          "project_credential_id": "5030d8ba-e762-4031-a39b-e5c84396bd08"
         }
       },
       "edges": {
@@ -296,7 +230,7 @@
           "source_job_id": "651b69ee-f927-42a8-8cce-712a8f1c96de",
           "condition_type": "on_job_success"
         },
-        "Fetch-certificate-as-PDF->Send-to-whatsapp-or-email": {
+        "Fetch-certificate-as-PDF->Send-to-citizen": {
           "enabled": true,
           "id": "321cff88-f684-4a25-842e-b45669b226d3",
           "target_job_id": "7c5e6bfc-49ed-4c09-8980-f984e4d36d32",
@@ -305,5 +239,7 @@
         }
       }
     }
-  }
+  },
+  "allow_support_access": false,
+  "requires_mfa": false
 }
