@@ -4,14 +4,15 @@
   "name": "dpga-brazil",
   "description": null,
   "color": null,
-  "concurrency": 4,
+  "concurrency": null,
   "inserted_at": "2025-09-30T06:59:34Z",
-  "updated_at": "2025-10-02T14:49:21Z",
+  "updated_at": "2026-04-28T07:01:41Z",
+  "channels": {},
   "parent_id": null,
-  "history_retention_period": 365,
-  "dataclip_retention_period": null,
-  "retention_policy": "retain_all",
   "scheduled_deletion": null,
+  "history_retention_period": 365,
+  "dataclip_retention_period": 365,
+  "retention_policy": "retain_all",
   "project_credentials": {
     "international@open.gov.sg-OpenFn-Test": {
       "id": "924fcb67-909a-4490-923d-f835ac4ff5cf",
@@ -34,120 +35,177 @@
       "owner": "taylor@openfn.org"
     }
   },
-  "version_history": [],
-  "collections": {},
+  "allow_support_access": false,
+  "collections": {
+    "taylor-for-cats": {
+      "id": "d9b749a8-ad6a-43e4-92b5-3f20f8a04bc1",
+      "name": "taylor-for-cats"
+    }
+  },
+  "requires_mfa": false,
   "workflows": {
-    "DHIS2-to-OpenCRVS-via-XRoad": {
-      "id": "ad3f2915-ee42-481d-b77c-52f58cd38fc4",
-      "name": "DHIS2-to-OpenCRVS-via-XRoad",
-      "inserted_at": "2025-10-21T09:17:01.515973Z",
-      "lock_version": 7,
+    "MOSIP": {
+      "id": "85557af1-4932-4076-8b54-ebb426f55376",
+      "name": "MOSIP",
+      "inserted_at": "2026-02-04T11:58:35.912824Z",
+      "lock_version": 18,
       "triggers": {
         "webhook": {
-          "enabled": false,
-          "id": "f6b981ef-83aa-4791-856e-0d26deacf466",
-          "type": "webhook"
+          "enabled": true,
+          "id": "406493cc-6c78-4e84-8473-5b97023e8b11",
+          "type": "webhook",
+          "webhook_reply": "before_start"
         }
       },
       "jobs": {
-        "Fetch-TEIs-from-DHIS2-via-X-Road": {
-          "id": "ea924f6e-9da9-46bd-a00d-88795c31f105",
-          "name": "Fetch TEIs from DHIS2 via X-Road",
-          "body": "// Add operations here",
-          "adaptor": "@openfn/language-dhis2@latest",
-          "project_credential_id": null
+        "use-permission-to-get-address-from-mosip": {
+          "id": "ee98cbb3-0c43-4071-8785-2be4573349df",
+          "name": "use permission to get address from mosip",
+          "body": "// Validate and transform the data you've received...\nfn(state => {\n  console.log(\"Do some data transformation here\");\n  return state;\n})\n",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-http@7.2.7"
         },
-        "Transform-TEIs-to-National-Standard": {
-          "id": "82f5a3b0-7af6-478f-a6a1-a0ca69cd609a",
-          "name": "Transform TEIs to National Standard",
-          "body": "// Add operations here",
-          "adaptor": "@openfn/language-claude@1.0.14",
-          "project_credential_id": null
-        },
-        "Create-IDs-in-OpenCRVS-via-X-Road": {
-          "id": "01bb7820-83f1-46c3-9387-db6a96cf8bcc",
-          "name": "Create IDs in OpenCRVS via X-Road",
-          "body": "// Add operations here",
-          "adaptor": "@openfn/language-opencrvs@latest",
-          "project_credential_id": null
-        },
-        "analyze-error": {
-          "id": "da95cfd4-d7aa-4048-8483-0d03f2857fe5",
-          "name": "analyze error",
-          "body": "// Add operations here",
-          "adaptor": "@openfn/language-chatgpt@2.0.3",
-          "project_credential_id": null
-        },
-        "Send-DPI-downtime-alert": {
-          "id": "24125ee6-4697-4a97-9f1c-2366471e2192",
-          "name": "Send DPI downtime alert",
-          "body": "// Add operations here",
-          "adaptor": "@openfn/language-mailgun@0.5.19",
-          "project_credential_id": null
-        },
-        "add-to-dashboard": {
-          "id": "be681c9f-9ff6-4616-84b1-9fa4b999480a",
-          "name": "add to dashboard",
+        "initiate-registration-in-social-protect-program": {
+          "id": "b6ec8fb4-c577-488d-86b4-417f0fb21280",
+          "name": "initiate registration in social protect program",
           "body": "// Check out the Job Writing Guide for help getting started:\n// https://docs.openfn.org/documentation/jobs/job-writing-guide\n",
-          "adaptor": "@openfn/language-azure-storage@3.0.2",
-          "project_credential_id": null
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-openspp@3.0.7"
+        },
+        "generate-verifiable-credential": {
+          "id": "f390ccc3-2f5e-45e1-8b76-c5dbcefd96b6",
+          "name": "generate verifiable credential",
+          "body": "// Check out the Job Writing Guide for help getting started:\n// https://docs.openfn.org/documentation/jobs/job-writing-guide\n",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-sunbird-rc@1.0.4"
+        },
+        "deliver-to-citizen": {
+          "id": "1299a7ee-94f7-486f-8ff3-be70a7a5ea0b",
+          "name": "deliver to citizen",
+          "body": "// Check out the Job Writing Guide for help getting started:\n// https://docs.openfn.org/documentation/jobs/job-writing-guide\n",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-mailgun@0.6.3"
         }
       },
       "edges": {
-        "webhook->Fetch-TEIs-from-DHIS2-via-X-Road": {
+        "webhook->use-permission-to-get-address-from-mosip": {
           "enabled": true,
-          "id": "078ae3e2-b8ff-4872-98eb-79deb878f93b",
-          "target_job_id": "ea924f6e-9da9-46bd-a00d-88795c31f105",
-          "source_trigger_id": "f6b981ef-83aa-4791-856e-0d26deacf466",
+          "id": "e526ca31-43fd-4bd1-866f-000980aafa7c",
+          "target_job_id": "ee98cbb3-0c43-4071-8785-2be4573349df",
+          "source_trigger_id": "406493cc-6c78-4e84-8473-5b97023e8b11",
           "condition_type": "always"
         },
-        "Fetch-TEIs-from-DHIS2-via-X-Road->Transform-TEIs-to-National-Standard": {
+        "initiate-registration-in-social-protect-program->generate-verifiable-credential": {
           "enabled": true,
-          "id": "3018358b-36b2-4b5f-9ee5-420e0098378e",
-          "target_job_id": "82f5a3b0-7af6-478f-a6a1-a0ca69cd609a",
-          "source_job_id": "ea924f6e-9da9-46bd-a00d-88795c31f105",
+          "id": "43543c38-0c96-4a99-8a07-90ed7e2f3cb9",
+          "target_job_id": "f390ccc3-2f5e-45e1-8b76-c5dbcefd96b6",
+          "source_job_id": "b6ec8fb4-c577-488d-86b4-417f0fb21280",
           "condition_type": "on_job_success"
         },
-        "Transform-TEIs-to-National-Standard->Create-IDs-in-OpenCRVS-via-X-Road": {
+        "generate-verifiable-credential->deliver-to-citizen": {
           "enabled": true,
-          "id": "04a6254b-d384-4af4-b2f0-28ecf746f51c",
-          "target_job_id": "01bb7820-83f1-46c3-9387-db6a96cf8bcc",
-          "source_job_id": "82f5a3b0-7af6-478f-a6a1-a0ca69cd609a",
+          "id": "a80f1fc2-8fb8-4cdb-87e7-1250f8309199",
+          "target_job_id": "1299a7ee-94f7-486f-8ff3-be70a7a5ea0b",
+          "source_job_id": "f390ccc3-2f5e-45e1-8b76-c5dbcefd96b6",
           "condition_type": "on_job_success"
         },
-        "Fetch-TEIs-from-DHIS2-via-X-Road->analyze-error": {
+        "use-permission-to-get-address-from-mosip->initiate-registration-in-social-protect-program": {
           "enabled": true,
-          "id": "c719c036-59b7-4353-b30d-e0d9267d5507",
-          "target_job_id": "da95cfd4-d7aa-4048-8483-0d03f2857fe5",
-          "source_job_id": "ea924f6e-9da9-46bd-a00d-88795c31f105",
-          "condition_type": "on_job_failure"
+          "id": "9e03264d-04f7-4bb5-8461-86f73f204c4e",
+          "target_job_id": "b6ec8fb4-c577-488d-86b4-417f0fb21280",
+          "source_job_id": "ee98cbb3-0c43-4071-8785-2be4573349df",
+          "condition_type": "on_job_success"
+        }
+      }
+    },
+    "async": {
+      "id": "2ad2f577-65a5-429f-bb93-9782005092da",
+      "name": "async",
+      "inserted_at": "2026-03-26T10:24:05.415744Z",
+      "lock_version": 3,
+      "triggers": {
+        "webhook": {
+          "enabled": true,
+          "id": "c31af2f0-3d8f-4aa1-8121-f87e6d496e7e",
+          "type": "webhook",
+          "webhook_reply": "before_start"
+        }
+      },
+      "jobs": {
+        "Transform-data": {
+          "id": "007d2c4e-fca2-4589-8287-8c019d0e28a2",
+          "name": "Transform data",
+          "body": "// Validate and transform the data you've received...\nfn(state => {\n  console.log(\"Do some data transformation here\");\n  return state;\n})\n\nfn(state => {\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      console.log('wait, and then resolve');\n      resolve(state);\n    }, 5000);\n  });\n});",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-common@latest"
+        }
+      },
+      "edges": {
+        "webhook->Transform-data": {
+          "enabled": true,
+          "id": "debd9fa7-0420-4090-86ce-0dc70234428e",
+          "target_job_id": "007d2c4e-fca2-4589-8287-8c019d0e28a2",
+          "source_trigger_id": "c31af2f0-3d8f-4aa1-8121-f87e6d496e7e",
+          "condition_type": "always"
+        }
+      }
+    },
+    "fast-lane": {
+      "id": "f4bc07db-ebf1-45be-a896-21d584e18754",
+      "name": "fast lane",
+      "inserted_at": "2026-03-30T13:24:12.985834Z",
+      "lock_version": 7,
+      "triggers": {
+        "cron": {
+          "enabled": true,
+          "id": "776dbb00-f22f-4c4d-8c9d-4e9457723ab3",
+          "type": "cron",
+          "cron_expression": "0 0 * * *"
+        }
+      },
+      "jobs": {
+        "Transform-data": {
+          "id": "05a5d0b1-ef10-401a-807a-641a9f5b2d3b",
+          "name": "Transform data",
+          "body": "// Validate and transform the data you've received...\nfn(state => {\n  console.log(\"Do some data transformation here\");\n  return { \"hi\": \"mom\"}\n})\n",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-common@latest"
         },
-        "Transform-TEIs-to-National-Standard->analyze-error": {
-          "enabled": true,
-          "id": "e728a06d-9d58-46d4-a7bd-ad0c1f069671",
-          "target_job_id": "da95cfd4-d7aa-4048-8483-0d03f2857fe5",
-          "source_job_id": "82f5a3b0-7af6-478f-a6a1-a0ca69cd609a",
-          "condition_type": "on_job_failure"
+        "Common": {
+          "id": "969264d0-7a76-4fac-82af-a147ebe768e4",
+          "name": "Common",
+          "body": "// Check out the Job Writing Guide for help getting started:\n// https://docs.openfn.org/documentation/jobs/job-writing-guide\n",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-common@3.2.3"
         },
-        "Create-IDs-in-OpenCRVS-via-X-Road->analyze-error": {
+        "Common-1": {
+          "id": "d981f953-4827-4954-8694-a6f3d1564d6b",
+          "name": "Common 1",
+          "body": "// Check out the Job Writing Guide for help getting started:\n// https://docs.openfn.org/documentation/jobs/job-writing-guide\n",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-common@3.2.3"
+        }
+      },
+      "edges": {
+        "cron->Transform-data": {
           "enabled": true,
-          "id": "99be9b03-3113-4c51-86c0-a78ece6c8f65",
-          "target_job_id": "da95cfd4-d7aa-4048-8483-0d03f2857fe5",
-          "source_job_id": "01bb7820-83f1-46c3-9387-db6a96cf8bcc",
-          "condition_type": "on_job_failure"
+          "id": "f8a97cb3-b967-4442-8185-495e2e6ee0c0",
+          "target_job_id": "05a5d0b1-ef10-401a-807a-641a9f5b2d3b",
+          "source_trigger_id": "776dbb00-f22f-4c4d-8c9d-4e9457723ab3",
+          "condition_type": "always"
         },
-        "analyze-error->Send-DPI-downtime-alert": {
+        "Transform-data->Common": {
           "enabled": true,
-          "id": "a154977c-6b95-4faf-af65-7d931b6f6459",
-          "target_job_id": "24125ee6-4697-4a97-9f1c-2366471e2192",
-          "source_job_id": "da95cfd4-d7aa-4048-8483-0d03f2857fe5",
+          "id": "a73f406f-5ce4-4e0c-8088-d361ff2bb6c4",
+          "target_job_id": "969264d0-7a76-4fac-82af-a147ebe768e4",
+          "source_job_id": "05a5d0b1-ef10-401a-807a-641a9f5b2d3b",
           "condition_type": "on_job_success"
         },
-        "analyze-error->add-to-dashboard": {
+        "Transform-data->Common-1": {
           "enabled": true,
-          "id": "33f27377-d997-44b9-8ab4-e5b046b2082c",
-          "target_job_id": "be681c9f-9ff6-4616-84b1-9fa4b999480a",
-          "source_job_id": "da95cfd4-d7aa-4048-8483-0d03f2857fe5",
+          "id": "9a92f6db-2735-4b8b-8dbd-0e18ffa0fd0c",
+          "target_job_id": "d981f953-4827-4954-8694-a6f3d1564d6b",
+          "source_job_id": "05a5d0b1-ef10-401a-807a-641a9f5b2d3b",
           "condition_type": "on_job_success"
         }
       }
@@ -155,13 +213,14 @@
     "FormSG-and-Sunbird-RC": {
       "id": "a586690c-9bce-480f-9dc3-f560d531a9fc",
       "name": "FormSG and Sunbird RC",
-      "inserted_at": "2025-11-02T17:03:11.647200Z",
-      "lock_version": 99,
+      "inserted_at": "2026-04-14T16:55:45.075285Z",
+      "lock_version": 104,
       "triggers": {
         "webhook": {
           "enabled": true,
           "id": "45ce7b6b-545e-42e2-9021-885484809f25",
-          "type": "webhook"
+          "type": "webhook",
+          "webhook_reply": "before_start"
         }
       },
       "jobs": {
@@ -169,50 +228,50 @@
           "id": "4482c977-a4b1-41a3-b77f-ffc510e8d2e2",
           "name": "Verify and Decrypt Responses",
           "body": "decryptSubmission($.data.data, {\n  verifySignature: true,\n  signatureHeader: $.request.headers['x-formsg-signature']\n})",
-          "adaptor": "@openfn/language-formsg@1.0.1",
-          "project_credential_id": "924fcb67-909a-4490-923d-f835ac4ff5cf"
+          "project_credential_id": "924fcb67-909a-4490-923d-f835ac4ff5cf",
+          "adaptor": "@openfn/language-formsg@1.0.1"
         },
         "Transform-Form-Data-and-Fetch-Course-Score": {
           "id": "5373fcb3-9c55-4a6d-86eb-42496a84acc2",
           "name": "Transform Form Data and Fetch Course Score",
-          "body": "function getAnswer(responses, label) {\n  const f = responses.find(r => r.question === label);\n  return f ? f.answer : null;\n}\n\nfunction generateDemoGrade() {\n  const base = 8.5 + Math.random() * 1.4; // 8.5 – 9.9\n  const rounded = Math.round(base * 100) / 100;\n  return `${rounded} / 10 (Distinction)`;\n}\n\nfn(state => {\n  const responses = state.data.responses || state.data.data?.responses || [];\n\n  const name = getAnswer(responses, 'Name') || 'Learner';\n  const email = getAnswer(responses, 'Email') || 'unknown@example.com';\n  const phone = getAnswer(responses, 'Mobile') || '+65-0000-0000';\n  const programme = getAnswer(responses, 'Course') || 'Data Analytics';\n\n  \n// In real life use cases, this is fetched from an external system\n// But for simplicity of demo: just generate it here as mocked data\n  const grade = generateDemoGrade();\n\n  const normalized = {\n    name,\n    email,\n    phone,\n    programme,\n    grade\n  };\n\n  return { ...state, normalized };\n});\n",
-          "adaptor": "@openfn/language-common@latest",
-          "project_credential_id": null
+          "body": "function getAnswer(responses, label) {\n  const f = responses.find(r => r.question === label);\n  return f ? f.answer : null;\n}\n\nfunction generateDemoGrade() {\n  const base = 8.5 + Math.random() * 1.4; // 8.5 – 9.9\n  const rounded = Math.round(base * 100) / 100;\n  return `${rounded} / 10 (Distinction)`;\n}\n\nfn(state => {\n  const responses = state.data.responses || state.data.data?.responses || [];\n\n  const name = getAnswer(responses, 'Name') || 'Learner';\n  const email = getAnswer(responses, 'Email') || 'unknown@example.com';\n  const phone = getAnswer(responses, 'Mobile') || '+65-0000-0000';\n  const programme = getAnswer(responses, 'Course') || 'Data Analytics';\n\n\n  \n// In real life use cases, this is fetched from an external system\n// But for simplicity of demo: just generate it here as mocked data\n  const grade = generateDemoGrade();\n\n  const normalized = {\n    name,\n    email,\n    phone,\n    programme,\n    grade\n  };\n\n  return { ...state, normalized };\n});",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-common@latest"
         },
         "Issue-a-Verifiable-Credential": {
           "id": "651b69ee-f927-42a8-8cce-712a8f1c96de",
           "name": "Issue a Verifiable Credential",
           "body": "issueCredential({\n  credential: {\n    \"@context\": [\n      \"https://www.w3.org/2018/credentials/v1\",\n      \"https://littlemight.github.io/sunbird-demo-vc-context/demo-context.json\"\n    ],\n    \"type\": [\n      \"VerifiableCredential\",\n      \"ProofOfAcademicEvaluationCredential\"\n    ],\n    \"issuer\": \"did:web:example.com:identifier:9536bc3b-3f4b-4cec-8c48-f67c9c4d63fc\",\n    \"issuanceDate\": new Date().toISOString(),\n    \"expirationDate\": new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString(),\n    \"credentialSubject\": {\n      \"id\": \"did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450\",\n      \"type\": \"ProofOfAcademicEvaluationCredential\",\n      \"name\": $.normalized.name,\n      \"grade\": $.normalized.grade,\n      \"programme\": $.normalized.programme,\n      \"certifyingInstitute\": \"YourSkillsFuture Council\",\n      \"evaluatingInstitute\": \"Institute of Digital Learning, India\",\n    }\n  },\n  \"credentialSchemaId\": \"did:schema:7b2fc25c-b7f6-40b5-bee4-d95bb5924450\",\n  \"credentialSchemaVersion\": \"1.0.0\",\n  \"tags\": [\"demo\", \"education\", \"cross-border\"]\n})",
-          "adaptor": "@openfn/language-sunbird-rc@1.0.1",
-          "project_credential_id": "5610a2a6-51ca-4698-850d-0225ba1658f0"
+          "project_credential_id": "5610a2a6-51ca-4698-850d-0225ba1658f0",
+          "adaptor": "@openfn/language-sunbird-rc@1.0.6"
         },
         "Fetch-certificate-as-PDF": {
           "id": "5938ec99-a16a-493e-8d83-4aafd10f1dea",
           "name": "Fetch certificate as PDF",
           "body": "fn(state => ({ ...state, credentialId: state.data.credential.id }));\n\ngetCredential($.credentialId, {\n  templateId: 'cmhct2djx001ems0j0pxlg1qc',\n});\n\nfn(state => ({ ...state, proof: state.data }));\n\ndownloadCredential($.credentialId, {\n  templateId: 'cmhct2djx001ems0j0pxlg1qc',\n});",
-          "adaptor": "@openfn/language-sunbird-rc@1.0.1",
-          "project_credential_id": "5610a2a6-51ca-4698-850d-0225ba1658f0"
+          "project_credential_id": "5610a2a6-51ca-4698-850d-0225ba1658f0",
+          "adaptor": "@openfn/language-sunbird-rc@latest"
         },
         "Deliver-to-citizen": {
           "id": "7c5e6bfc-49ed-4c09-8980-f984e4d36d32",
           "name": "Deliver to citizen",
           "body": "send({\n  from: 'admin@openfn.org',\n  to: $.normalized.email,\n  cc: [\n    'taylor@openfn.org',\n    'cheryl@open.gov.sg',\n    'michel@open.gov.sg',\n    'kartheek@sanketika.in',\n    'jack@openfn.org',\n    'pius@openfn.org',\n    'mohit@coss.org.in',\n  ],\n  subject: '✨ You have a new verifiable credential! ✅',\n  html: `<!DOCTYPE html>\n    <html>\n    <head>\n        <meta charset=\"UTF-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    </head>\n    <body style=\"font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;\">\n        <p>Dear ${$.normalized.name},</p>\n        \n        <p>🥳 Congratulations 🎉 on your new verifiable credential! The deatils are below and a PDF version is attached to this email.</p>\n        \n        <p><strong>Subject:</strong></p>\n        <ul style=\"background-color: #f4f4f4; padding: 20px; border-radius: 5px;\">\n            ${Object.entries(state.proof.credentialSubject).map(([key, value]) => \n                `<li><strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}</li>`\n            ).join('')}\n        </ul>\n        \n        <p><strong>Proof:</strong></p>\n        <ul style=\"background-color: #f4f4f4; padding: 20px; border-radius: 5px;\">\n            ${Object.entries(state.proof.proof).map(([key, value]) => \n                `<li><strong>${key}:</strong> ${typeof value === 'object' ? JSON.stringify(value) : value}</li>`\n            ).join('')}\n        </ul>\n        \n        <p>Best,<br>\n        Your Government</p>\n        \n        <p style=\"color: #666;\"><em>Powered 🇸🇬 FormSG and 🇮🇳 SunbirdRC. Automated by 🌍 OpenFn.</em></p>\n    </body>\n    </html>`,\n  attachment: {\n    filename: 'credential.pdf',\n    data: $.data\n  },\n});",
-          "adaptor": "@openfn/language-mailgun@0.6.0",
-          "project_credential_id": "5030d8ba-e762-4031-a39b-e5c84396bd08"
+          "project_credential_id": "5030d8ba-e762-4031-a39b-e5c84396bd08",
+          "adaptor": "@openfn/language-mailgun@0.6.0"
         },
         "Notify-if-invalid": {
           "id": "3dba64e0-305f-4a13-899f-5c2abb87baa6",
           "name": "Notify if invalid",
           "body": "send({\n  from: 'admin@openfn.org',\n  to: ['taylor@openfn.org'],\n  subject: 'Could not issue credential',\n  text: 'We could not issue a verifiable credential for: \\n\\n'\n    + `Subject: ${JSON.stringify($.data.normalized, null, 2)}\\n\\n`\n    + `Best,\\n`\n    + `Your Government`\n});",
-          "adaptor": "@openfn/language-mailgun@0.6.0",
-          "project_credential_id": "5030d8ba-e762-4031-a39b-e5c84396bd08"
+          "project_credential_id": "5030d8ba-e762-4031-a39b-e5c84396bd08",
+          "adaptor": "@openfn/language-mailgun@0.6.0"
         },
         "Alert-institution-credential-issuance": {
           "id": "a7739466-2f65-4183-85e5-29557a30787a",
           "name": "Alert institution credential issuance",
           "body": "send({\n  from: 'admin@openfn.org',\n  to: [\n    'taylor@openfn.org',\n    'cheryl@open.gov.sg',\n    'michel@open.gov.sg',\n    'kartheek@sanketika.in',\n    'jack@openfn.org',\n    'pius@openfn.org',\n    'mohit@coss.org.in',\n  ],\n  subject: 'New credential issued',\n  text: 'A new credential has just been issued: \\n\\n'\n    + `Subject: ${JSON.stringify($.proof.credentialSubject, null, 2)}\\n\\n`\n    + `Proof: ${JSON.stringify($.proof.proof, null, 2)}\\n\\n`\n    + `Best,\\n`\n    + `Your Government`\n});",
-          "adaptor": "@openfn/language-mailgun@0.6.0",
-          "project_credential_id": "5030d8ba-e762-4031-a39b-e5c84396bd08"
+          "project_credential_id": "5030d8ba-e762-4031-a39b-e5c84396bd08",
+          "adaptor": "@openfn/language-mailgun@0.6.0"
         }
       },
       "edges": {
@@ -266,8 +325,753 @@
           "condition_type": "on_job_success"
         }
       }
+    },
+    "Example-A": {
+      "id": "089b3a24-d3c6-48f0-827a-b983607304d0",
+      "name": "Example A",
+      "inserted_at": "2026-05-19T13:15:42.853304Z",
+      "lock_version": 2,
+      "triggers": {
+        "cron": {
+          "enabled": false,
+          "id": "ff7662ef-9fcc-4831-8dae-e6dd7e56706c",
+          "type": "cron",
+          "cron_expression": "0 8 * * *"
+        }
+      },
+      "jobs": {
+        "Fetch-new-birth-registrations-from-OpenCRVS": {
+          "id": "e5ccffcd-f251-4666-ab13-0569c46b95c9",
+          "name": "Fetch new birth registrations from OpenCRVS",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-opencrvs@latest"
+        },
+        "Assess-eligibility-for-social-protection-program": {
+          "id": "07256ae8-97fe-4514-88d2-5a4eb0d06404",
+          "name": "Assess eligibility for social protection program",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-gemini@latest"
+        },
+        "Load-eligible-registrations-into-OpenSPP": {
+          "id": "6e4e57aa-e194-4c2c-81e5-d027b311eeed",
+          "name": "Load eligible registrations into OpenSPP",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-openspp@latest"
+        },
+        "Send-immediate-payment-via-MTN-Momo": {
+          "id": "9f03b78b-cfbb-4b17-b27d-2afd945b07ca",
+          "name": "Send immediate payment via MTN Momo",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-mtn-momo@latest"
+        },
+        "Send-welcome-SMS": {
+          "id": "9d4e69d4-ae80-4b27-8ead-3099eec0e7ab",
+          "name": "Send welcome SMS",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-http@latest"
+        }
+      },
+      "edges": {
+        "cron->Fetch-new-birth-registrations-from-OpenCRVS": {
+          "enabled": true,
+          "id": "b79519ac-f128-41a9-b9e3-bffe3bf45bed",
+          "target_job_id": "e5ccffcd-f251-4666-ab13-0569c46b95c9",
+          "source_trigger_id": "ff7662ef-9fcc-4831-8dae-e6dd7e56706c",
+          "condition_type": "always"
+        },
+        "Fetch-new-birth-registrations-from-OpenCRVS->Assess-eligibility-for-social-protection-program": {
+          "enabled": true,
+          "id": "1581b9bd-a06a-4f18-969b-ee3ae55904b9",
+          "target_job_id": "07256ae8-97fe-4514-88d2-5a4eb0d06404",
+          "source_job_id": "e5ccffcd-f251-4666-ab13-0569c46b95c9",
+          "condition_type": "on_job_success"
+        },
+        "Assess-eligibility-for-social-protection-program->Load-eligible-registrations-into-OpenSPP": {
+          "enabled": true,
+          "id": "1ea0340b-daeb-494a-b694-68d13a48bb8c",
+          "target_job_id": "6e4e57aa-e194-4c2c-81e5-d027b311eeed",
+          "source_job_id": "07256ae8-97fe-4514-88d2-5a4eb0d06404",
+          "condition_type": "on_job_success"
+        },
+        "Load-eligible-registrations-into-OpenSPP->Send-immediate-payment-via-MTN-Momo": {
+          "enabled": true,
+          "id": "b9ecafc1-f573-4bef-88eb-dded22fb2ca0",
+          "target_job_id": "9f03b78b-cfbb-4b17-b27d-2afd945b07ca",
+          "source_job_id": "6e4e57aa-e194-4c2c-81e5-d027b311eeed",
+          "condition_type": "on_job_success"
+        },
+        "Load-eligible-registrations-into-OpenSPP->Send-welcome-SMS": {
+          "enabled": true,
+          "id": "a02de24e-1061-4376-a37c-9ce4e5764549",
+          "target_job_id": "9d4e69d4-ae80-4b27-8ead-3099eec0e7ab",
+          "source_job_id": "6e4e57aa-e194-4c2c-81e5-d027b311eeed",
+          "condition_type": "on_job_success"
+        }
+      }
+    },
+    "Example-B": {
+      "id": "e35f5d54-a42b-41ed-9683-2eeebd58317d",
+      "name": "Example B",
+      "inserted_at": "2026-05-19T13:18:48.481494Z",
+      "lock_version": 2,
+      "triggers": {
+        "cron": {
+          "enabled": false,
+          "id": "7292afe6-59ab-4a0c-9be6-36943d28d811",
+          "type": "cron",
+          "cron_expression": "0 8 * * *"
+        }
+      },
+      "jobs": {
+        "Fetch-tracked-entity-instances-from-DHIS2": {
+          "id": "1c5cd769-9836-48a7-9bb2-a97f3a3f0dc9",
+          "name": "Fetch tracked entity instances from DHIS2",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-dhis2@latest"
+        },
+        "Classify-with-Claude": {
+          "id": "4d30c88c-b289-47c5-946e-aca2466162b8",
+          "name": "Classify with Claude",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-claude@latest"
+        },
+        "Load-birth-events-into-OpenCRVS": {
+          "id": "b9196b7e-1db7-42b2-b854-806a586e8c01",
+          "name": "Load birth events into OpenCRVS",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-opencrvs@latest"
+        },
+        "Send-eligible-records-to-OpenSPP": {
+          "id": "41487833-f960-43da-8221-8985354921b2",
+          "name": "Send eligible records to OpenSPP",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-openspp@latest"
+        }
+      },
+      "edges": {
+        "cron->Fetch-tracked-entity-instances-from-DHIS2": {
+          "enabled": true,
+          "id": "a38f2eb9-4fac-49fe-b8f5-aa76eea3e174",
+          "target_job_id": "1c5cd769-9836-48a7-9bb2-a97f3a3f0dc9",
+          "source_trigger_id": "7292afe6-59ab-4a0c-9be6-36943d28d811",
+          "condition_type": "always"
+        },
+        "Fetch-tracked-entity-instances-from-DHIS2->Classify-with-Claude": {
+          "enabled": true,
+          "id": "722be6fc-4079-41e4-8aa9-e51341be04cb",
+          "target_job_id": "4d30c88c-b289-47c5-946e-aca2466162b8",
+          "source_job_id": "1c5cd769-9836-48a7-9bb2-a97f3a3f0dc9",
+          "condition_type": "on_job_success"
+        },
+        "Classify-with-Claude->Load-birth-events-into-OpenCRVS": {
+          "enabled": true,
+          "id": "ffdd3bde-ddab-48f6-9260-2d545280563a",
+          "target_job_id": "b9196b7e-1db7-42b2-b854-806a586e8c01",
+          "source_job_id": "4d30c88c-b289-47c5-946e-aca2466162b8",
+          "condition_type": "on_job_success"
+        },
+        "Classify-with-Claude->Send-eligible-records-to-OpenSPP": {
+          "enabled": true,
+          "id": "c336f2fb-3eb9-4023-a26a-272f372a12f7",
+          "target_job_id": "41487833-f960-43da-8221-8985354921b2",
+          "source_job_id": "4d30c88c-b289-47c5-946e-aca2466162b8",
+          "condition_type": "on_job_success"
+        }
+      }
+    },
+    "Do-Another-Thing": {
+      "id": "b939aef5-0c61-43d0-9a65-5b02edc6cdfd",
+      "name": "Do Another Thing",
+      "inserted_at": "2026-05-19T13:18:59.674443Z",
+      "lock_version": 2,
+      "triggers": {
+        "cron": {
+          "enabled": false,
+          "id": "9459cf14-8136-4093-9645-168a7ffa0623",
+          "type": "cron",
+          "cron_expression": "0 8 * * *"
+        }
+      },
+      "jobs": {
+        "Fetch-new-birth-events-from-OpenCRVS": {
+          "id": "455b167c-c18a-4f03-b9f0-39b2a4a392d4",
+          "name": "Fetch new birth events from OpenCRVS",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-opencrvs@latest"
+        },
+        "Check-eligibility-via-Claude-Agent": {
+          "id": "c97a020b-4344-4447-9864-f331c56acba1",
+          "name": "Check eligibility via Claude Agent",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-gemini@1.0.4"
+        },
+        "Register-in-OpenSPP": {
+          "id": "495469c5-e6d1-4a1f-ac20-684a22056f03",
+          "name": "Register in OpenSPP",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-openspp@latest"
+        },
+        "Send-payment-via-MTN-MoMo": {
+          "id": "68729ba7-fb9e-45d1-8f94-a8749ddb01f1",
+          "name": "Send payment via MTN MoMo",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-mtn-momo@latest"
+        }
+      },
+      "edges": {
+        "cron->Fetch-new-birth-events-from-OpenCRVS": {
+          "enabled": true,
+          "id": "3381f978-94ae-409c-a1fa-62b23b8b7a63",
+          "target_job_id": "455b167c-c18a-4f03-b9f0-39b2a4a392d4",
+          "source_trigger_id": "9459cf14-8136-4093-9645-168a7ffa0623",
+          "condition_type": "always"
+        },
+        "Fetch-new-birth-events-from-OpenCRVS->Check-eligibility-via-Claude-Agent": {
+          "enabled": true,
+          "id": "7af70482-1f6d-49ff-bdc9-dd19b4c1a8f2",
+          "target_job_id": "c97a020b-4344-4447-9864-f331c56acba1",
+          "source_job_id": "455b167c-c18a-4f03-b9f0-39b2a4a392d4",
+          "condition_type": "on_job_success"
+        },
+        "Check-eligibility-via-Claude-Agent->Register-in-OpenSPP": {
+          "enabled": true,
+          "id": "fa36bead-06db-4406-8a66-90cfd30da5ee",
+          "target_job_id": "495469c5-e6d1-4a1f-ac20-684a22056f03",
+          "source_job_id": "c97a020b-4344-4447-9864-f331c56acba1",
+          "condition_type": "on_job_success"
+        },
+        "Register-in-OpenSPP->Send-payment-via-MTN-MoMo": {
+          "enabled": true,
+          "id": "8d3edc3f-f45a-428d-8503-053bbb50456b",
+          "target_job_id": "68729ba7-fb9e-45d1-8f94-a8749ddb01f1",
+          "source_job_id": "495469c5-e6d1-4a1f-ac20-684a22056f03",
+          "condition_type": "on_job_success"
+        }
+      }
+    },
+    "Other-sample": {
+      "id": "0fd231f9-37b3-4fb6-a7c7-49cac2bc31bc",
+      "name": "Other sample",
+      "inserted_at": "2026-05-19T13:28:11.859508Z",
+      "lock_version": 2,
+      "triggers": {
+        "cron": {
+          "enabled": false,
+          "id": "2a960a08-ee76-4a0c-8a63-fb2e7b1b6597",
+          "type": "cron",
+          "cron_expression": "0 8 * * *"
+        }
+      },
+      "jobs": {
+        "Fetch-birth-events-from-OpenCRVS": {
+          "id": "40c719f7-dd86-498a-9a36-e438d393dd1c",
+          "name": "Fetch birth events from OpenCRVS",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-opencrvs@latest"
+        },
+        "Assess-eligibility": {
+          "id": "3af1ad14-0d6d-476d-9722-8c8822a4b4c6",
+          "name": "Assess eligibility",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-common@latest"
+        },
+        "Enroll-in-OpenSPP": {
+          "id": "eae938ad-9ccf-4d45-a242-12a9bb281296",
+          "name": "Enroll in OpenSPP",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-openspp@latest"
+        },
+        "Send-cash-via-MTN-Momo": {
+          "id": "7f432521-2442-40fd-86af-90d9cf381844",
+          "name": "Send cash via MTN Momo",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-mtn-momo@latest"
+        },
+        "Send-SMS-welcome-message": {
+          "id": "c0942065-a3d1-464c-a72f-1549d37046e6",
+          "name": "Send SMS welcome message",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-wigal-sms@latest"
+        }
+      },
+      "edges": {
+        "cron->Fetch-birth-events-from-OpenCRVS": {
+          "enabled": true,
+          "id": "f6346c8a-028c-4e82-a9d1-4db5af37fb49",
+          "target_job_id": "40c719f7-dd86-498a-9a36-e438d393dd1c",
+          "source_trigger_id": "2a960a08-ee76-4a0c-8a63-fb2e7b1b6597",
+          "condition_type": "always"
+        },
+        "Fetch-birth-events-from-OpenCRVS->Assess-eligibility": {
+          "enabled": true,
+          "id": "1870439e-6015-4f1b-9ff0-7b0d733b50f5",
+          "target_job_id": "3af1ad14-0d6d-476d-9722-8c8822a4b4c6",
+          "source_job_id": "40c719f7-dd86-498a-9a36-e438d393dd1c",
+          "condition_type": "on_job_success"
+        },
+        "Assess-eligibility->Enroll-in-OpenSPP": {
+          "enabled": true,
+          "id": "8bbac5b5-49a5-4b7d-acb2-d5a8413e1ffb",
+          "target_job_id": "eae938ad-9ccf-4d45-a242-12a9bb281296",
+          "source_job_id": "3af1ad14-0d6d-476d-9722-8c8822a4b4c6",
+          "condition_type": "js_expression",
+          "condition_expression": "state.eligible === true"
+        },
+        "Enroll-in-OpenSPP->Send-cash-via-MTN-Momo": {
+          "enabled": true,
+          "id": "b76c4ff4-2422-4a67-a6f5-9ce26e6e62e5",
+          "target_job_id": "7f432521-2442-40fd-86af-90d9cf381844",
+          "source_job_id": "eae938ad-9ccf-4d45-a242-12a9bb281296",
+          "condition_type": "js_expression",
+          "condition_expression": "state.immediatePayment === true"
+        },
+        "Enroll-in-OpenSPP->Send-SMS-welcome-message": {
+          "enabled": true,
+          "id": "545c8bd0-a33a-4a04-b62a-0a5ad59ec16c",
+          "target_job_id": "c0942065-a3d1-464c-a72f-1549d37046e6",
+          "source_job_id": "eae938ad-9ccf-4d45-a242-12a9bb281296",
+          "condition_type": "js_expression",
+          "condition_expression": "state.immediatePayment !== true"
+        }
+      }
+    },
+    "Daily-Birth-Event-Social-Protection-Enrollment": {
+      "id": "93270558-fff7-435a-8534-1ca6dc4d1f57",
+      "name": "Daily Birth Event Social Protection Enrollment",
+      "inserted_at": "2026-05-19T14:16:05.529234Z",
+      "lock_version": 4,
+      "triggers": {
+        "cron": {
+          "enabled": false,
+          "id": "4e08df6e-d973-402e-9dbd-973d665cbb2f",
+          "type": "cron",
+          "cron_expression": "0 8 * * *"
+        }
+      },
+      "jobs": {
+        "Fetch-birth-events-from-OpenCRVS": {
+          "id": "5c9b4236-7979-49ec-baa6-45c595c66415",
+          "name": "Fetch birth events from OpenCRVS",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-opencrvs@latest"
+        },
+        "Assess-eligibility-with-common": {
+          "id": "f83809b5-3e6b-4266-b4f0-087ae4330c9b",
+          "name": "Assess eligibility with common",
+          "body": "fn(state => {\n  const { mother_age, household_income } = state.data;\n\n  // Define eligibility criteria\n  const MIN_MOTHER_AGE = 18;\n  const MAX_HOUSEHOLD_INCOME = 50000;\n\n  const isEligible =\n    mother_age >= MIN_MOTHER_AGE &&\n    household_income <= MAX_HOUSEHOLD_INCOME;\n\n  return {\n    ...state,\n    data: {\n      ...state.data,\n      eligibility: isEligible,\n    },\n  };\n});",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-gemini@1.0.4"
+        },
+        "Enroll-in-OpenSPP": {
+          "id": "38573349-7654-465b-a4d2-ef66cc9ae0ae",
+          "name": "Enroll in OpenSPP",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-salesforce@9.0.8"
+        },
+        "Send-cash-via-MTN-MoMo": {
+          "id": "1effce5f-9722-4ec5-bcfd-5f224a7a5177",
+          "name": "Send cash via MTN MoMo",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-mtn-momo@latest"
+        },
+        "Send-enrollment-SMS": {
+          "id": "89d82dba-e68b-4b38-95c0-3d7924510438",
+          "name": "Send enrollment SMS",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-twilio@1.0.13"
+        }
+      },
+      "edges": {
+        "cron->Fetch-birth-events-from-OpenCRVS": {
+          "enabled": true,
+          "id": "999da675-663f-4e92-85b7-9788052ce5cf",
+          "target_job_id": "5c9b4236-7979-49ec-baa6-45c595c66415",
+          "source_trigger_id": "4e08df6e-d973-402e-9dbd-973d665cbb2f",
+          "condition_type": "always"
+        },
+        "Fetch-birth-events-from-OpenCRVS->Assess-eligibility-with-common": {
+          "enabled": true,
+          "id": "df91068c-71a5-4e11-8a73-c825f3359c9f",
+          "target_job_id": "f83809b5-3e6b-4266-b4f0-087ae4330c9b",
+          "source_job_id": "5c9b4236-7979-49ec-baa6-45c595c66415",
+          "condition_type": "on_job_success"
+        },
+        "Assess-eligibility-with-common->Enroll-in-OpenSPP": {
+          "enabled": true,
+          "id": "84cf94ce-dd41-4291-a6b6-1cc540ca1492",
+          "target_job_id": "38573349-7654-465b-a4d2-ef66cc9ae0ae",
+          "source_job_id": "f83809b5-3e6b-4266-b4f0-087ae4330c9b",
+          "condition_type": "js_expression",
+          "condition_expression": "state.eligible === true"
+        },
+        "Enroll-in-OpenSPP->Send-cash-via-MTN-MoMo": {
+          "enabled": true,
+          "id": "336789ed-67ab-4312-84a3-cee32b7c5ae3",
+          "target_job_id": "1effce5f-9722-4ec5-bcfd-5f224a7a5177",
+          "source_job_id": "38573349-7654-465b-a4d2-ef66cc9ae0ae",
+          "condition_type": "js_expression",
+          "condition_expression": "state.immediatePayment === true"
+        },
+        "Enroll-in-OpenSPP->Send-enrollment-SMS": {
+          "enabled": true,
+          "id": "00639a5f-19d8-460e-8163-c560850bb003",
+          "target_job_id": "89d82dba-e68b-4b38-95c0-3d7924510438",
+          "source_job_id": "38573349-7654-465b-a4d2-ef66cc9ae0ae",
+          "condition_type": "js_expression",
+          "condition_expression": "state.immediatePayment !== true"
+        }
+      }
+    },
+    "Daily-DHIS2-to-OpenMRS-Patient-Sync": {
+      "id": "80625668-2779-4566-bc5c-9388f355219f",
+      "name": "Daily DHIS2 to OpenMRS Patient Sync",
+      "inserted_at": "2026-06-01T15:48:52.584029Z",
+      "lock_version": 1,
+      "triggers": {
+        "cron": {
+          "enabled": false,
+          "id": "7bb43786-5ff6-4c2a-b6c8-d3d9fa783e54",
+          "type": "cron",
+          "cron_expression": "0 8 * * *"
+        }
+      },
+      "jobs": {
+        "Fetch-Tracked-Entity-Instances-from-DHIS2": {
+          "id": "f6d02721-1707-40c1-b82c-fd5f8db8d44b",
+          "name": "Fetch Tracked Entity Instances from DHIS2",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-dhis2@latest"
+        },
+        "Transform-to-FHIR-Patient-Standard": {
+          "id": "c3700bc9-1b53-4fea-b317-0974cfa8348e",
+          "name": "Transform to FHIR Patient Standard",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-common@latest"
+        },
+        "Enroll-Patients-in-OpenMRS": {
+          "id": "4e55b6d1-0fc8-4789-9213-b15e457e059e",
+          "name": "Enroll Patients in OpenMRS",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-openmrs@latest"
+        }
+      },
+      "edges": {
+        "cron->Fetch-Tracked-Entity-Instances-from-DHIS2": {
+          "enabled": true,
+          "id": "e92e0e57-3659-4b16-956a-19b2837f89e9",
+          "target_job_id": "f6d02721-1707-40c1-b82c-fd5f8db8d44b",
+          "source_trigger_id": "7bb43786-5ff6-4c2a-b6c8-d3d9fa783e54",
+          "condition_type": "always"
+        },
+        "Fetch-Tracked-Entity-Instances-from-DHIS2->Transform-to-FHIR-Patient-Standard": {
+          "enabled": true,
+          "id": "34b40ea3-d766-48a0-9688-ec5d4aba984d",
+          "target_job_id": "c3700bc9-1b53-4fea-b317-0974cfa8348e",
+          "source_job_id": "f6d02721-1707-40c1-b82c-fd5f8db8d44b",
+          "condition_type": "on_job_success"
+        },
+        "Transform-to-FHIR-Patient-Standard->Enroll-Patients-in-OpenMRS": {
+          "enabled": true,
+          "id": "229eb2bc-7e14-40a6-a7da-c2040d84aa6d",
+          "target_job_id": "4e55b6d1-0fc8-4789-9213-b15e457e059e",
+          "source_job_id": "c3700bc9-1b53-4fea-b317-0974cfa8348e",
+          "condition_type": "on_job_success"
+        }
+      }
+    },
+    "Daily-Birth-Registration-Sync-to-SPP": {
+      "id": "de50b7c6-7870-4306-9c1e-136465725000",
+      "name": "Daily Birth Registration Sync to SPP",
+      "inserted_at": "2026-06-22T14:57:29.880517Z",
+      "lock_version": 1,
+      "triggers": {
+        "cron": {
+          "enabled": false,
+          "id": "0f4c6b5e-48a7-4d9f-ae32-48e8b5abe27f",
+          "type": "cron",
+          "cron_expression": "0 8 * * *"
+        }
+      },
+      "jobs": {
+        "Fetch-Birth-Registrations-from-OpenCRVS": {
+          "id": "61628430-03d8-4097-8031-75e8b4dc77a5",
+          "name": "Fetch Birth Registrations from OpenCRVS",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-opencrvs@latest"
+        },
+        "Transform-to-National-Data-Standard": {
+          "id": "da8cc20a-5cf9-4f2b-ae42-46f7568854c8",
+          "name": "Transform to National Data Standard",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-common@latest"
+        },
+        "Load-Qualifying-Registrations-into-SPP": {
+          "id": "24062794-0e1b-41cb-a976-8670fc22b84e",
+          "name": "Load Qualifying Registrations into SPP",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-openspp@latest"
+        }
+      },
+      "edges": {
+        "cron->Fetch-Birth-Registrations-from-OpenCRVS": {
+          "enabled": true,
+          "id": "fdf67308-c2db-4567-869b-09ccac1cc9fe",
+          "target_job_id": "61628430-03d8-4097-8031-75e8b4dc77a5",
+          "source_trigger_id": "0f4c6b5e-48a7-4d9f-ae32-48e8b5abe27f",
+          "condition_type": "always"
+        },
+        "Fetch-Birth-Registrations-from-OpenCRVS->Transform-to-National-Data-Standard": {
+          "enabled": true,
+          "id": "d7d03734-7c1b-4ce9-a9e3-a8cecae68252",
+          "target_job_id": "da8cc20a-5cf9-4f2b-ae42-46f7568854c8",
+          "source_job_id": "61628430-03d8-4097-8031-75e8b4dc77a5",
+          "condition_type": "on_job_success"
+        },
+        "Transform-to-National-Data-Standard->Load-Qualifying-Registrations-into-SPP": {
+          "enabled": true,
+          "id": "aac04c15-66fe-44ad-b482-cae743de8bc3",
+          "target_job_id": "24062794-0e1b-41cb-a976-8670fc22b84e",
+          "source_job_id": "da8cc20a-5cf9-4f2b-ae42-46f7568854c8",
+          "condition_type": "on_job_success"
+        }
+      }
+    },
+    "Daily-Birth-Registration-to-Social-Protection-1": {
+      "id": "96926558-8776-494e-b6d1-07cb0f31a4b5",
+      "name": "Daily Birth Registration to Social Protection 1",
+      "inserted_at": "2026-06-25T17:39:19.839426Z",
+      "lock_version": 2,
+      "triggers": {
+        "cron": {
+          "enabled": false,
+          "id": "46243178-108c-493b-a9d0-a6a89822ed4a",
+          "type": "cron",
+          "cron_expression": "0 8 * * *"
+        }
+      },
+      "jobs": {
+        "Fetch-Birth-Registrations-from-DHIS2": {
+          "id": "313e7bca-76ea-4306-8e11-3f84f0eb2784",
+          "name": "Fetch Birth Registrations from DHIS2",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-dhis2@latest"
+        },
+        "Load-Eligible-Registrations-into-OpenSPP": {
+          "id": "eac41afe-fa7b-436d-b33c-392bd3a4e652",
+          "name": "Load Eligible Registrations into OpenSPP",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-openspp@latest"
+        },
+        "Call-OpenAI-Eligibility-Agent": {
+          "id": "46c1eb24-19c0-4b56-a94b-dfa70649c11a",
+          "name": "Call OpenAI Eligibility Agent",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-chatgpt@latest"
+        }
+      },
+      "edges": {
+        "cron->Fetch-Birth-Registrations-from-DHIS2": {
+          "enabled": true,
+          "id": "ffd36390-ba5a-4507-9d0c-0c12849386e7",
+          "target_job_id": "313e7bca-76ea-4306-8e11-3f84f0eb2784",
+          "source_trigger_id": "46243178-108c-493b-a9d0-a6a89822ed4a",
+          "condition_type": "always"
+        },
+        "Call-OpenAI-Eligibility-Agent->Load-Eligible-Registrations-into-OpenSPP": {
+          "enabled": true,
+          "id": "694fe3c1-f574-4f8f-8f63-215ae774ca6b",
+          "target_job_id": "eac41afe-fa7b-436d-b33c-392bd3a4e652",
+          "source_job_id": "46c1eb24-19c0-4b56-a94b-dfa70649c11a",
+          "condition_type": "on_job_success"
+        },
+        "Fetch-Birth-Registrations-from-DHIS2->Call-OpenAI-Eligibility-Agent": {
+          "enabled": true,
+          "id": "13d976e1-a8ee-4256-a1e1-0fa012dddd6d",
+          "target_job_id": "46c1eb24-19c0-4b56-a94b-dfa70649c11a",
+          "source_job_id": "313e7bca-76ea-4306-8e11-3f84f0eb2784",
+          "condition_type": "on_job_success"
+        }
+      }
+    },
+    "Daily-OpenCRVS-to-OpenSPP-Social-Protection-Sync": {
+      "id": "5eca6d75-712e-43f2-b5ef-c67bb347535a",
+      "name": "Daily OpenCRVS to OpenSPP Social Protection Sync",
+      "inserted_at": "2026-07-07T08:57:03.917710Z",
+      "lock_version": 1,
+      "triggers": {
+        "cron": {
+          "enabled": false,
+          "id": "afbea68c-d3a1-4c04-8e8c-b4fea0c6794c",
+          "type": "cron",
+          "cron_expression": "0 8 * * *"
+        }
+      },
+      "jobs": {
+        "Fetch-new-tracked-entity-instances": {
+          "id": "09e0aff0-f4dc-43f3-ae0e-b70f03c5ae52",
+          "name": "Fetch new tracked entity instances",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-opencrvs@latest"
+        },
+        "Determine-eligibility-for-social-protection": {
+          "id": "c921e98e-3a00-4ff9-8d4a-36aa9e1bf81d",
+          "name": "Determine eligibility for social protection",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-common@latest"
+        },
+        "Load-eligible-beneficiaries-into-OpenSPP": {
+          "id": "a21b231d-54eb-4592-9c46-842ea6c983e0",
+          "name": "Load eligible beneficiaries into OpenSPP",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-openspp@latest"
+        }
+      },
+      "edges": {
+        "cron->Fetch-new-tracked-entity-instances": {
+          "enabled": true,
+          "id": "da58de4c-7c15-438d-a492-95b212486521",
+          "target_job_id": "09e0aff0-f4dc-43f3-ae0e-b70f03c5ae52",
+          "source_trigger_id": "afbea68c-d3a1-4c04-8e8c-b4fea0c6794c",
+          "condition_type": "always"
+        },
+        "Fetch-new-tracked-entity-instances->Determine-eligibility-for-social-protection": {
+          "enabled": true,
+          "id": "97b0adb6-9cc6-48be-afaa-dfe7adca77b9",
+          "target_job_id": "c921e98e-3a00-4ff9-8d4a-36aa9e1bf81d",
+          "source_job_id": "09e0aff0-f4dc-43f3-ae0e-b70f03c5ae52",
+          "condition_type": "on_job_success"
+        },
+        "Determine-eligibility-for-social-protection->Load-eligible-beneficiaries-into-OpenSPP": {
+          "enabled": true,
+          "id": "e31b2a27-20af-4ffe-95af-a2ed8e6cb8f8",
+          "target_job_id": "a21b231d-54eb-4592-9c46-842ea6c983e0",
+          "source_job_id": "c921e98e-3a00-4ff9-8d4a-36aa9e1bf81d",
+          "condition_type": "on_job_success"
+        }
+      }
+    },
+    "Daily-Birth-Event-Social-Benefits-Enrollment": {
+      "id": "2a0d7e49-e4b5-4620-9e8e-d79c036b195a",
+      "name": "Daily Birth Event Social Benefits Enrollment",
+      "inserted_at": "2026-07-08T11:42:15.152162Z",
+      "lock_version": 2,
+      "triggers": {
+        "cron": {
+          "enabled": false,
+          "id": "3119038b-d3f1-4427-9f22-7083b97a0bfa",
+          "type": "cron",
+          "cron_expression": "0 8 * * *"
+        }
+      },
+      "jobs": {
+        "Fetch-birth-events-from-OpenCRVS": {
+          "id": "6acf7894-97c3-4ff9-81a3-85da45c7a93f",
+          "name": "Fetch birth events from OpenCRVS",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-postgresql@8.1.2"
+        },
+        "Transform-to-national-data-standard": {
+          "id": "69635377-9886-498f-b200-650a2a50bd90",
+          "name": "Transform to national data standard",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-common@latest"
+        },
+        "Check-eligibility-with-Claude": {
+          "id": "03114091-8acd-4e09-8fc9-56f588f40957",
+          "name": "Check eligibility with Claude",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-claude@1.1.2"
+        },
+        "Load-eligible-records-into-OpenSPP": {
+          "id": "4fbd6519-6bf5-4d21-a58b-4ab95b1c3056",
+          "name": "Load eligible records into OpenSPP",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-openspp@latest"
+        },
+        "Initiate-mPesa-payment": {
+          "id": "ce012c5e-9d65-4251-851a-47dc1ac542dd",
+          "name": "Initiate mPesa payment",
+          "body": "// Add operations here",
+          "project_credential_id": null,
+          "adaptor": "@openfn/language-mpesa@latest"
+        }
+      },
+      "edges": {
+        "cron->Fetch-birth-events-from-OpenCRVS": {
+          "enabled": true,
+          "id": "35ea9d9f-4920-4834-ba9b-6b157c0b2459",
+          "target_job_id": "6acf7894-97c3-4ff9-81a3-85da45c7a93f",
+          "source_trigger_id": "3119038b-d3f1-4427-9f22-7083b97a0bfa",
+          "condition_type": "always"
+        },
+        "Fetch-birth-events-from-OpenCRVS->Transform-to-national-data-standard": {
+          "enabled": true,
+          "id": "bc6c3e0a-bb19-49a7-b87e-6f35d0583100",
+          "target_job_id": "69635377-9886-498f-b200-650a2a50bd90",
+          "source_job_id": "6acf7894-97c3-4ff9-81a3-85da45c7a93f",
+          "condition_type": "on_job_success"
+        },
+        "Transform-to-national-data-standard->Check-eligibility-with-Claude": {
+          "enabled": true,
+          "id": "d5416d23-d8f1-4743-a1dc-48a9f8a1f879",
+          "target_job_id": "03114091-8acd-4e09-8fc9-56f588f40957",
+          "source_job_id": "69635377-9886-498f-b200-650a2a50bd90",
+          "condition_type": "on_job_success"
+        },
+        "Check-eligibility-with-Claude->Load-eligible-records-into-OpenSPP": {
+          "enabled": true,
+          "id": "66a750c5-54d6-4103-bab4-a549ef9a6112",
+          "target_job_id": "4fbd6519-6bf5-4d21-a58b-4ab95b1c3056",
+          "source_job_id": "03114091-8acd-4e09-8fc9-56f588f40957",
+          "condition_type": "js_expression",
+          "condition_expression": "state.confidence >= 0.9"
+        },
+        "Load-eligible-records-into-OpenSPP->Initiate-mPesa-payment": {
+          "enabled": true,
+          "id": "3e29f410-e6fe-4b3f-9f77-688fae9bd8bc",
+          "target_job_id": "ce012c5e-9d65-4251-851a-47dc1ac542dd",
+          "source_job_id": "4fbd6519-6bf5-4d21-a58b-4ab95b1c3056",
+          "condition_type": "on_job_success"
+        }
+      }
     }
-  },
-  "allow_support_access": false,
-  "requires_mfa": false
+  }
 }

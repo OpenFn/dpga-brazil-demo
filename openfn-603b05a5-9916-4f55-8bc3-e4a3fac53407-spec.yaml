@@ -1,6 +1,9 @@
 name: dpga-brazil
 description: null
-collections: null
+collections:
+  taylor-for-cats:
+    name: taylor-for-cats
+channels: null
 credentials:
   international@open.gov.sg-OpenFn-Test:
     name: OpenFn Test
@@ -15,90 +18,500 @@ credentials:
     name: TD Sunbird RC Test
     owner: taylor@openfn.org
 workflows:
-  DHIS2-to-OpenCRVS-via-XRoad:
-    name: DHIS2-to-OpenCRVS-via-XRoad
+  Daily-Birth-Event-Social-Benefits-Enrollment:
+    name: Daily Birth Event Social Benefits Enrollment
     jobs:
-      Fetch-TEIs-from-DHIS2-via-X-Road:
-        name: Fetch TEIs from DHIS2 via X-Road
-        adaptor: '@openfn/language-dhis2@latest'
+      Fetch-birth-events-from-OpenCRVS:
+        name: Fetch birth events from OpenCRVS
+        adaptor: '@openfn/language-postgresql@8.1.2'
         credential: null
         body: |
           // Add operations here
-      Transform-TEIs-to-National-Standard:
-        name: Transform TEIs to National Standard
-        adaptor: '@openfn/language-claude@1.0.14'
+      Transform-to-national-data-standard:
+        name: Transform to national data standard
+        adaptor: '@openfn/language-common@latest'
         credential: null
         body: |
           // Add operations here
-      Create-IDs-in-OpenCRVS-via-X-Road:
-        name: Create IDs in OpenCRVS via X-Road
+      Check-eligibility-with-Claude:
+        name: Check eligibility with Claude
+        adaptor: '@openfn/language-claude@1.1.2'
+        credential: null
+        body: |
+          // Add operations here
+      Load-eligible-records-into-OpenSPP:
+        name: Load eligible records into OpenSPP
+        adaptor: '@openfn/language-openspp@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Initiate-mPesa-payment:
+        name: Initiate mPesa payment
+        adaptor: '@openfn/language-mpesa@latest'
+        credential: null
+        body: |
+          // Add operations here
+    triggers:
+      cron:
+        type: cron
+        cron_expression: '0 8 * * *'
+        enabled: false
+    edges:
+      cron->Fetch-birth-events-from-OpenCRVS:
+        source_trigger: cron
+        target_job: Fetch-birth-events-from-OpenCRVS
+        condition_type: always
+        enabled: true
+      Fetch-birth-events-from-OpenCRVS->Transform-to-national-data-standard:
+        source_job: Fetch-birth-events-from-OpenCRVS
+        target_job: Transform-to-national-data-standard
+        condition_type: on_job_success
+        enabled: true
+      Transform-to-national-data-standard->Check-eligibility-with-Claude:
+        source_job: Transform-to-national-data-standard
+        target_job: Check-eligibility-with-Claude
+        condition_type: on_job_success
+        enabled: true
+      Check-eligibility-with-Claude->Load-eligible-records-into-OpenSPP:
+        source_job: Check-eligibility-with-Claude
+        target_job: Load-eligible-records-into-OpenSPP
+        condition_type: js_expression
+        condition_label: null
+        condition_expression: |
+          state.confidence >= 0.9
+        enabled: true
+      Load-eligible-records-into-OpenSPP->Initiate-mPesa-payment:
+        source_job: Load-eligible-records-into-OpenSPP
+        target_job: Initiate-mPesa-payment
+        condition_type: on_job_success
+        enabled: true
+  Daily-Birth-Event-Social-Protection-Enrollment:
+    name: Daily Birth Event Social Protection Enrollment
+    jobs:
+      Fetch-birth-events-from-OpenCRVS:
+        name: Fetch birth events from OpenCRVS
         adaptor: '@openfn/language-opencrvs@latest'
         credential: null
         body: |
           // Add operations here
-      analyze-error:
-        name: analyze error
-        adaptor: '@openfn/language-chatgpt@2.0.3'
+      Assess-eligibility-with-common:
+        name: Assess eligibility with common
+        adaptor: '@openfn/language-gemini@1.0.4'
         credential: null
         body: |
-          // Add operations here
-      Send-DPI-downtime-alert:
-        name: Send DPI downtime alert
-        adaptor: '@openfn/language-mailgun@0.5.19'
-        credential: null
-        body: |
-          // Add operations here
-      add-to-dashboard:
-        name: add to dashboard
-        adaptor: '@openfn/language-azure-storage@3.0.2'
-        credential: null
-        body: |
-          // Check out the Job Writing Guide for help getting started:
-          // https://docs.openfn.org/documentation/jobs/job-writing-guide
+          fn(state => {
+            const { mother_age, household_income } = state.data;
 
+            // Define eligibility criteria
+            const MIN_MOTHER_AGE = 18;
+            const MAX_HOUSEHOLD_INCOME = 50000;
+
+            const isEligible =
+              mother_age >= MIN_MOTHER_AGE &&
+              household_income <= MAX_HOUSEHOLD_INCOME;
+
+            return {
+              ...state,
+              data: {
+                ...state.data,
+                eligibility: isEligible,
+              },
+            };
+          });
+      Enroll-in-OpenSPP:
+        name: Enroll in OpenSPP
+        adaptor: '@openfn/language-salesforce@9.0.8'
+        credential: null
+        body: |
+          // Add operations here
+      Send-cash-via-MTN-MoMo:
+        name: Send cash via MTN MoMo
+        adaptor: '@openfn/language-mtn-momo@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Send-enrollment-SMS:
+        name: Send enrollment SMS
+        adaptor: '@openfn/language-twilio@1.0.13'
+        credential: null
+        body: |
+          // Add operations here
     triggers:
-      webhook:
-        type: webhook
+      cron:
+        type: cron
+        cron_expression: '0 8 * * *'
         enabled: false
     edges:
-      webhook->Fetch-TEIs-from-DHIS2-via-X-Road:
-        source_trigger: webhook
-        target_job: Fetch-TEIs-from-DHIS2-via-X-Road
+      cron->Fetch-birth-events-from-OpenCRVS:
+        source_trigger: cron
+        target_job: Fetch-birth-events-from-OpenCRVS
         condition_type: always
         enabled: true
-      Fetch-TEIs-from-DHIS2-via-X-Road->Transform-TEIs-to-National-Standard:
-        source_job: Fetch-TEIs-from-DHIS2-via-X-Road
-        target_job: Transform-TEIs-to-National-Standard
+      Fetch-birth-events-from-OpenCRVS->Assess-eligibility-with-common:
+        source_job: Fetch-birth-events-from-OpenCRVS
+        target_job: Assess-eligibility-with-common
         condition_type: on_job_success
         enabled: true
-      Transform-TEIs-to-National-Standard->Create-IDs-in-OpenCRVS-via-X-Road:
-        source_job: Transform-TEIs-to-National-Standard
-        target_job: Create-IDs-in-OpenCRVS-via-X-Road
+      Assess-eligibility-with-common->Enroll-in-OpenSPP:
+        source_job: Assess-eligibility-with-common
+        target_job: Enroll-in-OpenSPP
+        condition_type: js_expression
+        condition_label: null
+        condition_expression: |
+          state.eligible === true
+        enabled: true
+      Enroll-in-OpenSPP->Send-cash-via-MTN-MoMo:
+        source_job: Enroll-in-OpenSPP
+        target_job: Send-cash-via-MTN-MoMo
+        condition_type: js_expression
+        condition_label: null
+        condition_expression: |
+          state.immediatePayment === true
+        enabled: true
+      Enroll-in-OpenSPP->Send-enrollment-SMS:
+        source_job: Enroll-in-OpenSPP
+        target_job: Send-enrollment-SMS
+        condition_type: js_expression
+        condition_label: null
+        condition_expression: |
+          state.immediatePayment !== true
+        enabled: true
+  Daily-Birth-Registration-Sync-to-SPP:
+    name: Daily Birth Registration Sync to SPP
+    jobs:
+      Fetch-Birth-Registrations-from-OpenCRVS:
+        name: Fetch Birth Registrations from OpenCRVS
+        adaptor: '@openfn/language-opencrvs@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Transform-to-National-Data-Standard:
+        name: Transform to National Data Standard
+        adaptor: '@openfn/language-common@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Load-Qualifying-Registrations-into-SPP:
+        name: Load Qualifying Registrations into SPP
+        adaptor: '@openfn/language-openspp@latest'
+        credential: null
+        body: |
+          // Add operations here
+    triggers:
+      cron:
+        type: cron
+        cron_expression: '0 8 * * *'
+        enabled: false
+    edges:
+      cron->Fetch-Birth-Registrations-from-OpenCRVS:
+        source_trigger: cron
+        target_job: Fetch-Birth-Registrations-from-OpenCRVS
+        condition_type: always
+        enabled: true
+      Fetch-Birth-Registrations-from-OpenCRVS->Transform-to-National-Data-Standard:
+        source_job: Fetch-Birth-Registrations-from-OpenCRVS
+        target_job: Transform-to-National-Data-Standard
         condition_type: on_job_success
         enabled: true
-      Fetch-TEIs-from-DHIS2-via-X-Road->analyze-error:
-        source_job: Fetch-TEIs-from-DHIS2-via-X-Road
-        target_job: analyze-error
-        condition_type: on_job_failure
-        enabled: true
-      Transform-TEIs-to-National-Standard->analyze-error:
-        source_job: Transform-TEIs-to-National-Standard
-        target_job: analyze-error
-        condition_type: on_job_failure
-        enabled: true
-      Create-IDs-in-OpenCRVS-via-X-Road->analyze-error:
-        source_job: Create-IDs-in-OpenCRVS-via-X-Road
-        target_job: analyze-error
-        condition_type: on_job_failure
-        enabled: true
-      analyze-error->Send-DPI-downtime-alert:
-        source_job: analyze-error
-        target_job: Send-DPI-downtime-alert
+      Transform-to-National-Data-Standard->Load-Qualifying-Registrations-into-SPP:
+        source_job: Transform-to-National-Data-Standard
+        target_job: Load-Qualifying-Registrations-into-SPP
         condition_type: on_job_success
         enabled: true
-      analyze-error->add-to-dashboard:
-        source_job: analyze-error
-        target_job: add-to-dashboard
+  Daily-Birth-Registration-to-Social-Protection-1:
+    name: Daily Birth Registration to Social Protection 1
+    jobs:
+      Fetch-Birth-Registrations-from-DHIS2:
+        name: Fetch Birth Registrations from DHIS2
+        adaptor: '@openfn/language-dhis2@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Load-Eligible-Registrations-into-OpenSPP:
+        name: Load Eligible Registrations into OpenSPP
+        adaptor: '@openfn/language-openspp@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Call-OpenAI-Eligibility-Agent:
+        name: Call OpenAI Eligibility Agent
+        adaptor: '@openfn/language-chatgpt@latest'
+        credential: null
+        body: |
+          // Add operations here
+    triggers:
+      cron:
+        type: cron
+        cron_expression: '0 8 * * *'
+        enabled: false
+    edges:
+      cron->Fetch-Birth-Registrations-from-DHIS2:
+        source_trigger: cron
+        target_job: Fetch-Birth-Registrations-from-DHIS2
+        condition_type: always
+        enabled: true
+      Call-OpenAI-Eligibility-Agent->Load-Eligible-Registrations-into-OpenSPP:
+        source_job: Call-OpenAI-Eligibility-Agent
+        target_job: Load-Eligible-Registrations-into-OpenSPP
+        condition_type: on_job_success
+        enabled: true
+      Fetch-Birth-Registrations-from-DHIS2->Call-OpenAI-Eligibility-Agent:
+        source_job: Fetch-Birth-Registrations-from-DHIS2
+        target_job: Call-OpenAI-Eligibility-Agent
+        condition_type: on_job_success
+        enabled: true
+  Daily-DHIS2-to-OpenMRS-Patient-Sync:
+    name: Daily DHIS2 to OpenMRS Patient Sync
+    jobs:
+      Fetch-Tracked-Entity-Instances-from-DHIS2:
+        name: Fetch Tracked Entity Instances from DHIS2
+        adaptor: '@openfn/language-dhis2@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Transform-to-FHIR-Patient-Standard:
+        name: Transform to FHIR Patient Standard
+        adaptor: '@openfn/language-common@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Enroll-Patients-in-OpenMRS:
+        name: Enroll Patients in OpenMRS
+        adaptor: '@openfn/language-openmrs@latest'
+        credential: null
+        body: |
+          // Add operations here
+    triggers:
+      cron:
+        type: cron
+        cron_expression: '0 8 * * *'
+        enabled: false
+    edges:
+      cron->Fetch-Tracked-Entity-Instances-from-DHIS2:
+        source_trigger: cron
+        target_job: Fetch-Tracked-Entity-Instances-from-DHIS2
+        condition_type: always
+        enabled: true
+      Fetch-Tracked-Entity-Instances-from-DHIS2->Transform-to-FHIR-Patient-Standard:
+        source_job: Fetch-Tracked-Entity-Instances-from-DHIS2
+        target_job: Transform-to-FHIR-Patient-Standard
+        condition_type: on_job_success
+        enabled: true
+      Transform-to-FHIR-Patient-Standard->Enroll-Patients-in-OpenMRS:
+        source_job: Transform-to-FHIR-Patient-Standard
+        target_job: Enroll-Patients-in-OpenMRS
+        condition_type: on_job_success
+        enabled: true
+  Daily-OpenCRVS-to-OpenSPP-Social-Protection-Sync:
+    name: Daily OpenCRVS to OpenSPP Social Protection Sync
+    jobs:
+      Fetch-new-tracked-entity-instances:
+        name: Fetch new tracked entity instances
+        adaptor: '@openfn/language-opencrvs@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Determine-eligibility-for-social-protection:
+        name: Determine eligibility for social protection
+        adaptor: '@openfn/language-common@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Load-eligible-beneficiaries-into-OpenSPP:
+        name: Load eligible beneficiaries into OpenSPP
+        adaptor: '@openfn/language-openspp@latest'
+        credential: null
+        body: |
+          // Add operations here
+    triggers:
+      cron:
+        type: cron
+        cron_expression: '0 8 * * *'
+        enabled: false
+    edges:
+      cron->Fetch-new-tracked-entity-instances:
+        source_trigger: cron
+        target_job: Fetch-new-tracked-entity-instances
+        condition_type: always
+        enabled: true
+      Fetch-new-tracked-entity-instances->Determine-eligibility-for-social-protection:
+        source_job: Fetch-new-tracked-entity-instances
+        target_job: Determine-eligibility-for-social-protection
+        condition_type: on_job_success
+        enabled: true
+      Determine-eligibility-for-social-protection->Load-eligible-beneficiaries-into-OpenSPP:
+        source_job: Determine-eligibility-for-social-protection
+        target_job: Load-eligible-beneficiaries-into-OpenSPP
+        condition_type: on_job_success
+        enabled: true
+  Do-Another-Thing:
+    name: Do Another Thing
+    jobs:
+      Fetch-new-birth-events-from-OpenCRVS:
+        name: Fetch new birth events from OpenCRVS
+        adaptor: '@openfn/language-opencrvs@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Check-eligibility-via-Claude-Agent:
+        name: Check eligibility via Claude Agent
+        adaptor: '@openfn/language-gemini@1.0.4'
+        credential: null
+        body: |
+          // Add operations here
+      Register-in-OpenSPP:
+        name: Register in OpenSPP
+        adaptor: '@openfn/language-openspp@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Send-payment-via-MTN-MoMo:
+        name: Send payment via MTN MoMo
+        adaptor: '@openfn/language-mtn-momo@latest'
+        credential: null
+        body: |
+          // Add operations here
+    triggers:
+      cron:
+        type: cron
+        cron_expression: '0 8 * * *'
+        enabled: false
+    edges:
+      cron->Fetch-new-birth-events-from-OpenCRVS:
+        source_trigger: cron
+        target_job: Fetch-new-birth-events-from-OpenCRVS
+        condition_type: always
+        enabled: true
+      Fetch-new-birth-events-from-OpenCRVS->Check-eligibility-via-Claude-Agent:
+        source_job: Fetch-new-birth-events-from-OpenCRVS
+        target_job: Check-eligibility-via-Claude-Agent
+        condition_type: on_job_success
+        enabled: true
+      Check-eligibility-via-Claude-Agent->Register-in-OpenSPP:
+        source_job: Check-eligibility-via-Claude-Agent
+        target_job: Register-in-OpenSPP
+        condition_type: on_job_success
+        enabled: true
+      Register-in-OpenSPP->Send-payment-via-MTN-MoMo:
+        source_job: Register-in-OpenSPP
+        target_job: Send-payment-via-MTN-MoMo
+        condition_type: on_job_success
+        enabled: true
+  Example-A:
+    name: Example A
+    jobs:
+      Fetch-new-birth-registrations-from-OpenCRVS:
+        name: Fetch new birth registrations from OpenCRVS
+        adaptor: '@openfn/language-opencrvs@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Assess-eligibility-for-social-protection-program:
+        name: Assess eligibility for social protection program
+        adaptor: '@openfn/language-gemini@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Load-eligible-registrations-into-OpenSPP:
+        name: Load eligible registrations into OpenSPP
+        adaptor: '@openfn/language-openspp@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Send-immediate-payment-via-MTN-Momo:
+        name: Send immediate payment via MTN Momo
+        adaptor: '@openfn/language-mtn-momo@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Send-welcome-SMS:
+        name: Send welcome SMS
+        adaptor: '@openfn/language-http@latest'
+        credential: null
+        body: |
+          // Add operations here
+    triggers:
+      cron:
+        type: cron
+        cron_expression: '0 8 * * *'
+        enabled: false
+    edges:
+      cron->Fetch-new-birth-registrations-from-OpenCRVS:
+        source_trigger: cron
+        target_job: Fetch-new-birth-registrations-from-OpenCRVS
+        condition_type: always
+        enabled: true
+      Fetch-new-birth-registrations-from-OpenCRVS->Assess-eligibility-for-social-protection-program:
+        source_job: Fetch-new-birth-registrations-from-OpenCRVS
+        target_job: Assess-eligibility-for-social-protection-program
+        condition_type: on_job_success
+        enabled: true
+      Assess-eligibility-for-social-protection-program->Load-eligible-registrations-into-OpenSPP:
+        source_job: Assess-eligibility-for-social-protection-program
+        target_job: Load-eligible-registrations-into-OpenSPP
+        condition_type: on_job_success
+        enabled: true
+      Load-eligible-registrations-into-OpenSPP->Send-immediate-payment-via-MTN-Momo:
+        source_job: Load-eligible-registrations-into-OpenSPP
+        target_job: Send-immediate-payment-via-MTN-Momo
+        condition_type: on_job_success
+        enabled: true
+      Load-eligible-registrations-into-OpenSPP->Send-welcome-SMS:
+        source_job: Load-eligible-registrations-into-OpenSPP
+        target_job: Send-welcome-SMS
+        condition_type: on_job_success
+        enabled: true
+  Example-B:
+    name: Example B
+    jobs:
+      Fetch-tracked-entity-instances-from-DHIS2:
+        name: Fetch tracked entity instances from DHIS2
+        adaptor: '@openfn/language-dhis2@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Classify-with-Claude:
+        name: Classify with Claude
+        adaptor: '@openfn/language-claude@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Load-birth-events-into-OpenCRVS:
+        name: Load birth events into OpenCRVS
+        adaptor: '@openfn/language-opencrvs@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Send-eligible-records-to-OpenSPP:
+        name: Send eligible records to OpenSPP
+        adaptor: '@openfn/language-openspp@latest'
+        credential: null
+        body: |
+          // Add operations here
+    triggers:
+      cron:
+        type: cron
+        cron_expression: '0 8 * * *'
+        enabled: false
+    edges:
+      cron->Fetch-tracked-entity-instances-from-DHIS2:
+        source_trigger: cron
+        target_job: Fetch-tracked-entity-instances-from-DHIS2
+        condition_type: always
+        enabled: true
+      Fetch-tracked-entity-instances-from-DHIS2->Classify-with-Claude:
+        source_job: Fetch-tracked-entity-instances-from-DHIS2
+        target_job: Classify-with-Claude
+        condition_type: on_job_success
+        enabled: true
+      Classify-with-Claude->Load-birth-events-into-OpenCRVS:
+        source_job: Classify-with-Claude
+        target_job: Load-birth-events-into-OpenCRVS
+        condition_type: on_job_success
+        enabled: true
+      Classify-with-Claude->Send-eligible-records-to-OpenSPP:
+        source_job: Classify-with-Claude
+        target_job: Send-eligible-records-to-OpenSPP
         condition_type: on_job_success
         enabled: true
   FormSG-and-Sunbird-RC:
@@ -137,6 +550,7 @@ workflows:
             const phone = getAnswer(responses, 'Mobile') || '+65-0000-0000';
             const programme = getAnswer(responses, 'Course') || 'Data Analytics';
 
+
             
           // In real life use cases, this is fetched from an external system
           // But for simplicity of demo: just generate it here as mocked data
@@ -152,10 +566,9 @@ workflows:
 
             return { ...state, normalized };
           });
-
       Issue-a-Verifiable-Credential:
         name: Issue a Verifiable Credential
-        adaptor: '@openfn/language-sunbird-rc@1.0.1'
+        adaptor: '@openfn/language-sunbird-rc@1.0.6'
         credential: taylor@openfn.org-TD-Sunbird-RC-Test
         body: |
           issueCredential({
@@ -187,7 +600,7 @@ workflows:
           })
       Fetch-certificate-as-PDF:
         name: Fetch certificate as PDF
-        adaptor: '@openfn/language-sunbird-rc@1.0.1'
+        adaptor: '@openfn/language-sunbird-rc@latest'
         credential: taylor@openfn.org-TD-Sunbird-RC-Test
         body: |
           fn(state => ({ ...state, credentialId: state.data.credential.id }));
@@ -295,6 +708,7 @@ workflows:
     triggers:
       webhook:
         type: webhook
+        webhook_reply: before_start
         enabled: true
     edges:
       webhook->Verify-and-Decrypt-Responses:
@@ -332,3 +746,224 @@ workflows:
         target_job: Alert-institution-credential-issuance
         condition_type: on_job_success
         enabled: false
+  MOSIP:
+    name: MOSIP
+    jobs:
+      use-permission-to-get-address-from-mosip:
+        name: use permission to get address from mosip
+        adaptor: '@openfn/language-http@7.2.7'
+        credential: null
+        body: |
+          // Validate and transform the data you've received...
+          fn(state => {
+            console.log("Do some data transformation here");
+            return state;
+          })
+
+      initiate-registration-in-social-protect-program:
+        name: initiate registration in social protect program
+        adaptor: '@openfn/language-openspp@3.0.7'
+        credential: null
+        body: |
+          // Check out the Job Writing Guide for help getting started:
+          // https://docs.openfn.org/documentation/jobs/job-writing-guide
+
+      generate-verifiable-credential:
+        name: generate verifiable credential
+        adaptor: '@openfn/language-sunbird-rc@1.0.4'
+        credential: null
+        body: |
+          // Check out the Job Writing Guide for help getting started:
+          // https://docs.openfn.org/documentation/jobs/job-writing-guide
+
+      deliver-to-citizen:
+        name: deliver to citizen
+        adaptor: '@openfn/language-mailgun@0.6.3'
+        credential: null
+        body: |
+          // Check out the Job Writing Guide for help getting started:
+          // https://docs.openfn.org/documentation/jobs/job-writing-guide
+
+    triggers:
+      webhook:
+        type: webhook
+        webhook_reply: before_start
+        enabled: true
+    edges:
+      webhook->use-permission-to-get-address-from-mosip:
+        source_trigger: webhook
+        target_job: use-permission-to-get-address-from-mosip
+        condition_type: always
+        enabled: true
+      initiate-registration-in-social-protect-program->generate-verifiable-credential:
+        source_job: initiate-registration-in-social-protect-program
+        target_job: generate-verifiable-credential
+        condition_type: on_job_success
+        enabled: true
+      generate-verifiable-credential->deliver-to-citizen:
+        source_job: generate-verifiable-credential
+        target_job: deliver-to-citizen
+        condition_type: on_job_success
+        enabled: true
+      use-permission-to-get-address-from-mosip->initiate-registration-in-social-protect-program:
+        source_job: use-permission-to-get-address-from-mosip
+        target_job: initiate-registration-in-social-protect-program
+        condition_type: on_job_success
+        enabled: true
+  Other-sample:
+    name: Other sample
+    jobs:
+      Fetch-birth-events-from-OpenCRVS:
+        name: Fetch birth events from OpenCRVS
+        adaptor: '@openfn/language-opencrvs@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Assess-eligibility:
+        name: Assess eligibility
+        adaptor: '@openfn/language-common@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Enroll-in-OpenSPP:
+        name: Enroll in OpenSPP
+        adaptor: '@openfn/language-openspp@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Send-cash-via-MTN-Momo:
+        name: Send cash via MTN Momo
+        adaptor: '@openfn/language-mtn-momo@latest'
+        credential: null
+        body: |
+          // Add operations here
+      Send-SMS-welcome-message:
+        name: Send SMS welcome message
+        adaptor: '@openfn/language-wigal-sms@latest'
+        credential: null
+        body: |
+          // Add operations here
+    triggers:
+      cron:
+        type: cron
+        cron_expression: '0 8 * * *'
+        enabled: false
+    edges:
+      cron->Fetch-birth-events-from-OpenCRVS:
+        source_trigger: cron
+        target_job: Fetch-birth-events-from-OpenCRVS
+        condition_type: always
+        enabled: true
+      Fetch-birth-events-from-OpenCRVS->Assess-eligibility:
+        source_job: Fetch-birth-events-from-OpenCRVS
+        target_job: Assess-eligibility
+        condition_type: on_job_success
+        enabled: true
+      Assess-eligibility->Enroll-in-OpenSPP:
+        source_job: Assess-eligibility
+        target_job: Enroll-in-OpenSPP
+        condition_type: js_expression
+        condition_label: null
+        condition_expression: |
+          state.eligible === true
+        enabled: true
+      Enroll-in-OpenSPP->Send-cash-via-MTN-Momo:
+        source_job: Enroll-in-OpenSPP
+        target_job: Send-cash-via-MTN-Momo
+        condition_type: js_expression
+        condition_label: null
+        condition_expression: |
+          state.immediatePayment === true
+        enabled: true
+      Enroll-in-OpenSPP->Send-SMS-welcome-message:
+        source_job: Enroll-in-OpenSPP
+        target_job: Send-SMS-welcome-message
+        condition_type: js_expression
+        condition_label: null
+        condition_expression: |
+          state.immediatePayment !== true
+        enabled: true
+  async:
+    name: async
+    jobs:
+      Transform-data:
+        name: Transform data
+        adaptor: '@openfn/language-common@latest'
+        credential: null
+        body: |
+          // Validate and transform the data you've received...
+          fn(state => {
+            console.log("Do some data transformation here");
+            return state;
+          })
+
+          fn(state => {
+            return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                console.log('wait, and then resolve');
+                resolve(state);
+              }, 5000);
+            });
+          });
+    triggers:
+      webhook:
+        type: webhook
+        webhook_reply: before_start
+        enabled: true
+    edges:
+      webhook->Transform-data:
+        source_trigger: webhook
+        target_job: Transform-data
+        condition_type: always
+        enabled: true
+  fast-lane:
+    name: fast lane
+    jobs:
+      Transform-data:
+        name: Transform data
+        adaptor: '@openfn/language-common@latest'
+        credential: null
+        body: |
+          // Validate and transform the data you've received...
+          fn(state => {
+            console.log("Do some data transformation here");
+            return { "hi": "mom"}
+          })
+
+      Common:
+        name: Common
+        adaptor: '@openfn/language-common@3.2.3'
+        credential: null
+        body: |
+          // Check out the Job Writing Guide for help getting started:
+          // https://docs.openfn.org/documentation/jobs/job-writing-guide
+
+      Common-1:
+        name: Common 1
+        adaptor: '@openfn/language-common@3.2.3'
+        credential: null
+        body: |
+          // Check out the Job Writing Guide for help getting started:
+          // https://docs.openfn.org/documentation/jobs/job-writing-guide
+
+    triggers:
+      cron:
+        type: cron
+        cron_expression: '0 0 * * *'
+        enabled: true
+    edges:
+      cron->Transform-data:
+        source_trigger: cron
+        target_job: Transform-data
+        condition_type: always
+        enabled: true
+      Transform-data->Common:
+        source_job: Transform-data
+        target_job: Common
+        condition_type: on_job_success
+        enabled: true
+      Transform-data->Common-1:
+        source_job: Transform-data
+        target_job: Common-1
+        condition_type: on_job_success
+        enabled: true
